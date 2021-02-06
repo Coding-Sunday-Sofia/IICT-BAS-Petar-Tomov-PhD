@@ -1,0 +1,123 @@
+\documentclass[14pt,a4paper]{book}
+%\degree{"Доктор"} 
+%\thesistitle{ПРОГНОЗИРАНЕ НА ВРЕМЕВИ РЕДОВЕ С ИЗКУСТВЕНИ НЕВРОННИ МРЕЖИ}
+%\author{\href{https://www.iict.bas.bg/ipdss/p-tomov-bg.html}{инж. Петър Росенов \textsc{Томов}}}
+%\supervisor{\href{http://iinf.bas.bg/bg/monov.htm}{проф. д-р Владимир Василев \textsc{Монов}}}
+%\addresses{ИИКТ-БАН, ул. "акад. Георги Бончев", блок 2, етаж 5, кабинет 514, град София 1113, България} 
+%\subject{02.07.20 "Комуникационни мрежи и системи" \\ 5.3 "Комуникационна и компютърна техника" \\ 5 "Технически науки"} 
+%\university{\href{http://bas.bg}{Българска академия на науките}}
+%\faculty{\href{http://iict.bas.bg}{Институт по информационни и комуникационни технологии}} 
+%\department{\href{http://iinf.bas.bg}{Моделиране и оптимизация}}
+
+% Използване на български език.
+\usepackage[english,bulgarian]{babel}
+\usepackage[utf8]{inputenc}
+
+% Използване на графика.
+\usepackage[pdftex]{graphicx}
+
+% Използване на PDF-и за кориците.
+\usepackage{pdfpages}
+
+% Използване на хедър и футър.
+\usepackage{fancyhdr}
+
+% Използване на кавички при цитиране.
+\usepackage{dirtytalk}
+
+% Използва се за създаване на азбучен указател.
+\usepackage{imakeidx}
+
+% Използва се за сензитивни хипер-връзки в самия документ.
+\usepackage[pdftex, bookmarks, linktocpage]{hyperref}
+
+% Използва се за листинги с програмен код.
+\usepackage{listings}
+
+% Заглавие.
+\title{Прогнозиране на времеви редове с изкуствени невронни мрежи}
+
+% Автор.
+\author{инж. Петър Росенов Томов}
+
+% Директория с изображения.
+\graphicspath{{images/}}
+
+% Избор на активен език.
+\selectlanguage{bulgarian}
+
+% Текстове за декорация на страницата в горната и долната част.
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[LE,RO]{\thepage}
+\fancyhead[RE]{Прогнозиране на времеви редове с изкуствени невронни мрежи}
+\fancyhead[LO]{\thechapter}
+\fancyfoot[LE,RO]{Петър Томов - ИИКТ-БАН - София - 2021}
+
+% Дебелина на разделителните линии.
+\renewcommand{\headrulewidth}{2pt}
+\renewcommand{\footrulewidth}{1pt}
+
+% Генериране на азбучен указател.
+\onecolumn
+\makeindex[columns=2, title=Азбучен указател, intoc]
+
+% Подменя думата използван а за ноемрация на фрагментите програмен код.
+\renewcommand{\lstlistingname}{Листинг}
+
+% Смяна на названието за списъка от листингите.
+\renewcommand{\lstlistlistingname}{Списък на листингите}
+
+% Определя характеристиките на листигните за програмния код.
+\lstset{backgroundcolor=\color{gray!30}, breaklines=true, language=r, frame=single}
+
+% Начало на документа.
+\begin{document}
+
+% Предна корица.
+%\includepdf[pages={1}]{covers/front}
+\thispagestyle{empty}
+
+% Номериране на страниците със служебна информация.
+\pagenumbering{roman}
+\setcounter{page}{1}
+
+% Таблица на съдържанието.
+\addcontentsline{toc}{chapter}{Съдържание}
+\tableofcontents\newpage
+
+% Списък с фигурите.
+\addcontentsline{toc}{chapter}{Списък на фигурите}
+\listoffigures\newpage
+
+% Списък с таблиците.
+\addcontentsline{toc}{chapter}{Списък на таблиците}
+\listoftables\newpage
+
+% Списък с листингите.
+\addcontentsline{toc}{chapter}{Списък на листингите}
+\lstlistoflistings\newpage
+
+% Номериране на страниците с основното изложение.
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% Отделните глави са в отделни файлове.
+%\include{chapters/introduction}\newpage
+%\include{chapters/chapter01}\newpage
+%\include{chapters/chapter02}\newpage
+%\include{chapters/chapter03}\newpage
+%\include{chapters/chapter04}\newpage
+%\include{chapters/conclusion}\newpage
+
+% Списък с използвана литература и източници на информация.
+\addcontentsline{toc}{chapter}{Библиография}
+%\input{chapters/references}\newpage
+
+% Азбучен указател на използваните термини.
+\printindex
+
+% Задна корица.
+%\includepdf[pages=-]{covers/back}
+
+\end{document}
