@@ -86,6 +86,10 @@
 \addcontentsline{toc}{chapter}{Съдържание}
 \tableofcontents\newpage
 
+% Списък с абревиатурите и съкращенията.
+\addcontentsline{toc}{chapter}{Списък на абревиатурите и съкращенията}
+\listoffigures\newpage
+
 % Списък с фигурите.
 \addcontentsline{toc}{chapter}{Списък на фигурите}
 \listoffigures\newpage
@@ -103,16 +107,21 @@
 \setcounter{page}{1}
 
 % Отделните глави са в отделни файлове.
-%\include{chapters/introduction}\newpage
-%\include{chapters/chapter01}\newpage
-%\include{chapters/chapter02}\newpage
-%\include{chapters/chapter03}\newpage
-%\include{chapters/chapter04}\newpage
-%\include{chapters/conclusion}\newpage
+\include{chapters/introduction}
+\newpage
+\include{chapters/chapter01}
+\newpage
+\include{chapters/chapter02}
+\newpage
+\include{chapters/chapter03}
+\newpage
+\include{chapters/chapter04}
+\newpage
+\include{chapters/conclusion}
 
 % Списък с използвана литература и източници на информация.
-\addcontentsline{toc}{chapter}{Библиография}
-%\input{chapters/references}\newpage
+\newpage
+\input{chapters/references}
 
 % Азбучен указател на използваните термини.
 \printindex
