@@ -84,29 +84,30 @@
 
 % Таблица на съдържанието.
 \addcontentsline{toc}{chapter}{Съдържание}
-\tableofcontents\newpage
+\tableofcontents
 
 % Списък с абревиатурите и съкращенията.
 \addcontentsline{toc}{chapter}{Списък на абревиатурите и съкращенията}
-\listoffigures\newpage
+\listoffigures
 
 % Списък с фигурите.
 \addcontentsline{toc}{chapter}{Списък на фигурите}
-\listoffigures\newpage
+\listoffigures
 
 % Списък с таблиците.
 \addcontentsline{toc}{chapter}{Списък на таблиците}
-\listoftables\newpage
+\listoftables
 
 % Списък с листингите.
 \addcontentsline{toc}{chapter}{Списък на листингите}
-\lstlistoflistings\newpage
+\lstlistoflistings
 
 % Номериране на страниците с основното изложение.
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
 % Отделните глави са в отделни файлове.
+\newpage
 \include{chapters/introduction}
 \newpage
 \include{chapters/chapter01}
