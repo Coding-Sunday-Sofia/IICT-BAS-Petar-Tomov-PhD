@@ -134,6 +134,41 @@
 \label{fig005}
 \end{figure}
 
+Общата грешка, допусната от мрежата при всички тренировъчни примери е на базата на средно-квадратична грешка (Листинг \ref{listing008}).
+
+\begin{lstlisting}[caption=Обща средно-квадратична грешка на мрежата, language=Python, basicstyle=\tiny, label=listing008]
+    ''' Network total error. '''
+    sheet.getCellRangeByName("M1").setFormula("= SQRT( SUM(K:K) / COUNT(K:K) )")
+    sheet.getCellRangeByName("M1").CellBackColor = 0
+\end{lstlisting}
+
+Два региона клетки в листа на електронната таблица се определят за стойностите на теглата в мрежата, както и обратно мащабиране към оригиналните стойности (Листинг \ref{listing009}).
+
+\begin{lstlisting}[caption=Определяне на региони за теглата на мрежата, language=Python, basicstyle=\tiny, label=listing009]
+    ''' Setup hidden layer weights. '''
+    wih = 1
+    for h in range(2, hidden_size + 2):
+        for i in range(1, input_size + 2):
+            sheet.getCellRangeByName("Q" + str(wih)).CellBackColor = (255 << 16 | 0 << 8 | 255)
+            wih = wih + 1
+        
+    ''' Setup output layer weights. '''
+    who = 1
+    for o in range(2, output_size + 2):
+        for h in range(1, hidden_size + 2):
+            sheet.getCellRangeByName("S" + str(who)).CellBackColor = (255 << 16 | 0 << 8 | 255)
+            who = who + 1
+
+        sheet.getCellRangeByName("U" + str(o)).setFormula("=$C$1 + ($C$2 - $C$1) * ((T" + str(o) + " - $C$4) / ($C$5 - $C$4))")
+        sheet.getCellRangeByName("U" + str(o)).CellBackColor = (0 << 16 | 127 << 8 | 0)
+\end{lstlisting}
+
+За да не се блокира графичния потребителски интерфейс, „разгръщането“ на модела на изкуствената невронна мрежа се извършва в отделна нишка (Листинг \ref{listing010}).
 
 
+\begin{lstlisting}[caption=Изпълнение с отделна нишка, language=Python, basicstyle=\tiny, label=listing010]
+def BuildAnnModel():
+    thread = Thread(target=ThreadWorker, args=(XSCRIPTCONTEXT.getDesktop(),))
+    thread.start()
+\end{lstlisting}
 
