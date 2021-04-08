@@ -34,6 +34,9 @@
 % Използва се за листинги с програмен код.
 \usepackage{listings}
 
+% Използва се за оцветяване на клетките в таблиците.
+\usepackage{xcolor,colortbl}
+
 % Заглавие.
 \title{Прогнозиране на времеви редове с изкуствени невронни мрежи}
 
@@ -88,7 +91,36 @@
 
 % Списък с абревиатурите и съкращенията.
 \addcontentsline{toc}{chapter}{Списък на абревиатурите и съкращенията}
-\listoffigures
+\chapter*{Списък на абревиатурите и съкращенията}
+
+\begin{tabular}{ | c | c | c | c | }
+\hline
+\cellcolor{gray!15}Чуждоезичен термин & \cellcolor{gray!15}Съкращение & \cellcolor{gray!15}Български термин & \cellcolor{gray!15}Съкращение \\ [0.05ex] 
+\hline
+\hline
+Differential Evolution & DE & Еволюция на разликите & ЕР \\ 
+\hline
+Particle Swarm Optimization & PSO & Оптимизация с рояци от частици & ОРЧ \\  
+\hline
+Artificial Neural Network & ANN & Изкуствена невронна мрежа & ИНМ \\  
+\hline
+Multi-Layer Perceptron & MLP & Многослоен перцептрон & МП \\  
+\hline
+& & & \\  
+\hline
+& & & \\  
+\hline
+& & & \\  
+\hline
+& & & \\  
+\hline
+& & & \\  
+\hline
+& & & \\  
+\hline
+& & & \\  
+\hline
+\end{tabular}
 
 % Списък с фигурите.
 \addcontentsline{toc}{chapter}{Списък на фигурите}
