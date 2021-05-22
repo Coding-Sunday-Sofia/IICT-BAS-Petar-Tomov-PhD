@@ -9,9 +9,16 @@
 %\faculty{\href{http://iict.bas.bg}{Институт по информационни и комуникационни технологии}} 
 %\department{\href{http://iinf.bas.bg}{Моделиране и оптимизация}}
 
+% Добавя възможност за сензитивни хипер-връзки в самия документ.
+\usepackage[pdftex, bookmarks, linktocpage]{hyperref}
+
+% Команда с множество опции за настройка на поведението на пакета hyperref, с най-полезната опция - кирилизация на заглавията от Bookmarks в Acrobat.
+\hypersetup{unicode=true, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
+
 % Използване на български език.
-\usepackage[english,bulgarian]{babel}
+\usepackage[T2A,T1]{fontenc}
 \usepackage[utf8]{inputenc}
+\usepackage[english,bulgarian]{babel}
 
 % Използване на графика.
 \usepackage[pdftex]{graphicx}
