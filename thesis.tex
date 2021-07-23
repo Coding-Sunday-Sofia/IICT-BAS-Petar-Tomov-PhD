@@ -46,6 +46,9 @@
 
 % Заглавие.
 \title{Прогнозиране на времеви редове с изкуствени невронни мрежи}
+\makeatletter
+\let\inserttitle\@title
+\makeatother
 
 % Автор.
 \author{инж. Петър Росенов Томов}
@@ -60,8 +63,8 @@
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[LE,RO]{\thepage}
-\fancyhead[RE]{Прогнозиране на времеви редове с изкуствени невронни мрежи}
-\fancyhead[LO]{\thechapter}
+\fancyhead[RE]{\tiny\MakeUppercase{\inserttitle}}
+\fancyhead[LO]{\tiny\leftmark}
 \fancyfoot[LE,RO]{Петър Томов - ИИКТ-БАН - София - 2021}
 
 % Дебелина на разделителните линии.
