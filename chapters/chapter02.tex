@@ -6,10 +6,64 @@
 
 \section{Оператор за селекция с локално търсене, пълно изчерпване и рекурсивно спускане}
 
-Генетичните алгоритми са глобална оптимизационна мета-евристика, вдъхновена от идеите в естествената еволюция. Процесът на оптимизация е организиран в три общи операции - селекция, кръстосване и мутация. Кръстосването и мутацията са отговорни за предлагането на нови решения в популацията, а селекцията е отговорна за по -добър избор на родители. През последните пет десетилетия в литературата са предложени много оператори за селекция - пропорционална селекция, турнирна слекция, ранг базиран селекция, болцманова селекция, слекция с нелинейно класиране, конкурентна селекция и други. Тук се предлага нов оператор за селекция, основан на създаването на рекурсивни поколения. На всяко ниво на рекурсия всички индивиди в популацията се чифтосват помежду си (груба сила). Методът на грубата сила се комбинира с локално търсене, като груба сила се прилага докато има излъчване на по-добър индивид в поколението. Само най-добрият индивид се изкачва в по-горното ниво на рекурсията. 
+Генетичните алгоритми са глобална оптимизационна мета-евристика, вдъхновена от идеите в естествената еволюция. Процесът на оптимизация е организиран в три общи операции - селекция, кръстосване и мутация. Кръстосването и мутацията са отговорни за предлагането на нови решения в популацията, а селекцията е отговорна за по -добър избор на родители. През последните пет десетилетия в литературата са предложени много оператори за селекция - пропорционална селекция, турнирна слекция, ранг базиран селекция, болцманова селекция, слекция с нелинейно класиране, конкурентна селекция и други. Тук се предлага нов оператор за селекция, основан на създаването на рекурсивни поколения. На всяко ниво на рекурсия всички индивиди в популацията се чифтосват помежду си (груба сила). Методът на грубата сила се комбинира с локално търсене, като груба сила се прилага докато има излъчване на по-добър индивид в поколението \cite{Balabanov-01}. Само най-добрият индивид се изкачва в по-горното ниво на рекурсията. 
 
-Популацията в генетичния алгоритъм е организирана като йерархична структура. На най-ниското ниво на структурата популацията се състои от произволно генерирани индивиди. Във всяка популация всеки индивид се чифтосват с всички други. Само
-най-жизненият индивид се изпраща към по-горното ниво на рекурсивната структура. По този начин всяка по-горна популация се установява от най-добрите индивиди, изпратени от по-долните нива. Като тестове се взети функциите общо известни функции за проверка на евристични оптимизационни алгоритми (Michalewicz, Ackley, Schwefel Rastrigin, Griewank). Всички експерименти се извършват в 10K пространствено реално число \cite{Tomov-01}. Подобрението постигнато с добавянето на локално търсене, спрямо варианта използващ единствено пълно изчерпване е илюстрирано в Таблица \ref{tab0001}.
+\begin{lstlisting}[caption=Равномерно кръстосване, language=Java, basicstyle=\tiny, label=listing011]
+	static double[] crossover(double first[], double second[]) {
+		double[] child = new double[INPUT_SIZE];
+
+		for (int i = 0; i < INPUT_SIZE; i++) {
+			if (PRNG.nextBoolean()) {
+				child[i] = first[i];
+			} else {
+				child[i] = second[i];
+			}
+		}
+
+		return child;
+	}
+\end{lstlisting}
+
+\begin{lstlisting}[caption=Мутация със случайно число, language=Java, basicstyle=\tiny, label=listing012]
+	static void mutate(double child[]) {
+		for (int i = 0; i < INPUT_SIZE; i++) {
+			if (PRNG.nextDouble() >= MUTATION_RATE) {
+				continue;
+			}
+
+			child[i] += PRNG.nextDouble() - 0.5D;
+		}
+	}
+\end{lstlisting}
+
+Популацията в генетичния алгоритъм е организирана като йерархична структура. На най-ниското ниво на структурата популацията се състои от произволно генерирани индивиди (Листинг \ref{listing013}). Във всяка популация всеки индивид се чифтосват с всички други (кръстосване - Листинг \ref{listing011} и мутация - Листинг \ref{listing012}). Само най-жизненият индивид се изпраща към по-горното ниво на рекурсивната структура (Листинг \ref{listing013}). По този начин всяка по-горна популация се установява от най-добрите индивиди, изпратени от по-долните нива.
+
+\begin{lstlisting}[caption=Йерархична селекция, language=Java, basicstyle=\tiny, label=listing013]
+	private static double[] solution(int depth, int size, Selection selection,
+			Function function) {
+		double[] result = null;
+
+		if (depth > 0) {
+			double population[][] = new double[size][];
+			for (int j = 0; j < size; j++) {
+				population[j] = solution(depth - 1, size, selection, function);
+			}
+
+			result = selection.best(population, function);
+		} else if (depth == 0) {
+			/* First generation is selected randomly. */
+			result = new double[INPUT_SIZE];
+			for (int i = 0; i < INPUT_SIZE; i++) {
+				result[i] = function.minimum() + PRNG.nextDouble()
+						* (function.maximum() - function.minimum());
+			}
+		}
+
+		return result;
+	}
+\end{lstlisting}
+
+Като тестове се взети функциите общо известни функции за проверка на евристични оптимизационни алгоритми (Michalewicz, Ackley, Schwefel Rastrigin, Griewank \cite{Balabanov-01}). Всички експерименти се извършват в 10K пространствено реално число \cite{Tomov-01}. Подобрението постигнато с добавянето на локално търсене, спрямо варианта използващ единствено пълно изчерпване е илюстрирано в Таблица \ref{tab0001}.
 
 \begin{table}[h!]
 \begin{tabular}{ | c | c | c | c | c | c | }
@@ -43,7 +97,7 @@ Brute-Force & 235794757 & 235794757 & 235794757 & 235794757 & 235794757 \\
 \label{tab0002}
 \end{table}
 
-Броят изчисления на целевата функция не може да бъде предварително определен във варианта, когато се прилага локално търсене \cite{Tomov-02}. Достигнатите субоптимални стойности за всяка от функциите, при ниво на рекурсия 7 и размер на популацията 11, са представени в Таблица \ref{tab0003}. Таблично са представени граничния случай с ниво на рекурсия 7 и размер на популацията 11. Експериментите са проведени за нива на рекурсия от 2 до 7 и размери на популацията от 2 до 11.
+Броят изчисления на целевата функция не може да бъде предварително определен във варианта, когато се прилага локално търсене \cite{Tomov-02}. Достигнатите субоптимални стойности за всяка от функциите, при ниво на рекурсия 7 и размер на популацията 11, са представени в Таблица \ref{tab0003}. Таблично са представени граничния случай с ниво на рекурсия 7 и размер на популацията 11. Графично се представят резултатите от експериментите проведени за нива на рекурсия от 2 до 7 и размери на популацията от 2 до 11 (Фиг. \ref{fig0019}-\ref{fig0048}).
 
 \begin{table}[h!]
 \begin{tabular}{ | c | c | c | c | }
@@ -68,7 +122,215 @@ Brute-Force & 171780.33307271387 & 262621.61053178157 & \\
 \label{tab0003}
 \end{table}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0019.png}
+  \caption{Изчислително време [ms] за функцията Michalewicz с локално търсене}
+\label{fig0019}
+\end{figure}
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0020.png}
+  \caption{Субоптимални стойности за функцията Michalewicz с локално търсене}
+\label{fig0020}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0021.png}
+  \caption{Брой изчисления на функцията Michalewicz с локално търсене}
+\label{fig0021}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0022.png}
+  \caption{Изчислително време [ms] за функцията Ackley с локално търсене}
+\label{fig0022}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0023.png}
+  \caption{Субоптимални стойности за функцията Ackley с локално търсене}
+\label{fig0023}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0024.png}
+  \caption{Брой изчисления на функцията Ackley с локално търсене}
+\label{fig0024}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0025.png}
+  \caption{Изчислително време [ms] за функцията Schwefel с локално търсене}
+\label{fig0025}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0026.png}
+  \caption{Субоптимални стойности за функцията Schwefel с локално търсене}
+\label{fig0026}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0027.png}
+  \caption{Брой изчисления на функцията Schwefel с локално търсене}
+\label{fig0027}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0028.png}
+  \caption{Изчислително време [ms] за функцията Rastrigin с локално търсене}
+\label{fig0028}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0029.png}
+  \caption{Субоптимални стойности за функцията Rastrigin с локално търсене}
+\label{fig0029}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0030.png}
+  \caption{Брой изчисления на функцията Rastrigin с локално търсене}
+\label{fig0030}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0031.png}
+  \caption{Изчислително време [ms] за функцията Griewank с локално търсене}
+\label{fig0031}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0032.png}
+  \caption{Субоптимални стойности за функцията Griewank с локално търсене}
+\label{fig0032}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0033.png}
+  \caption{Брой изчисления на функцията Griewank с локално търсене}
+\label{fig0033}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0034.png}
+  \caption{Изчислително време [ms] за функцията Michalewicz с пълно изчерпване}
+\label{fig0034}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0035.png}
+  \caption{Субоптимални стойности за функцията Michalewicz с пълно изчерпване}
+\label{fig0035}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0036.png}
+  \caption{Брой изчисления на функцията Michalewicz с пълно изчерпване}
+\label{fig0036}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0037.png}
+  \caption{Изчислително време [ms] за функцията Ackley с пълно изчерпване}
+\label{fig0037}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0038.png}
+  \caption{Субоптимални стойности за функцията Ackley с пълно изчерпване}
+\label{fig0038}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0039.png}
+  \caption{Брой изчисления на функцията Ackley с пълно изчерпване}
+\label{fig0039}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0040.png}
+  \caption{Изчислително време [ms] за функцията Schwefel с пълно изчерпване}
+\label{fig0040}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0041.png}
+  \caption{Субоптимални стойности за функцията Schwefel с пълно изчерпване}
+\label{fig0041}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0042.png}
+  \caption{Брой изчисления на функцията Schwefel с пълно изчерпване}
+\label{fig0042}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0043.png}
+  \caption{Изчислително време [ms] за функцията Rastrigin с пълно изчерпване}
+\label{fig0043}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0044.png}
+  \caption{Субоптимални стойности за функцията Rastrigin с пълно изчерпване}
+\label{fig0044}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0045.png}
+  \caption{Брой изчисления на функцията Rastrigin с пълно изчерпване}
+\label{fig0045}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0046.png}
+  \caption{Изчислително време [ms] за функцията Griewank с пълно изчерпване}
+\label{fig0046}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0047.png}
+  \caption{Субоптимални стойности за функцията Griewank с пълно изчерпване}
+\label{fig0047}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0048.png}
+  \caption{Брой изчисления на функцията Griewank с пълно изчерпване}
+\label{fig0048}
+\end{figure}
 
 От извършените експерименти ясно се вижда, че добавката на локално търсене води до по-добри резултати, но това е за сметка на по-дългото време за пресмятане.
 
@@ -86,7 +348,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0007.png}
+  \includegraphics[width=0.8\linewidth]{fig0007.png}
   \caption{Входни данни за цената на Bitcoin}
 \label{fig0007}
 \end{figure}
@@ -95,7 +357,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0008.png}
+  \includegraphics[width=0.8\linewidth]{fig0008.png}
   \caption{Настройки за оптимизация}
 \label{fig0008}
 \end{figure}
@@ -104,7 +366,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0009.png}
+  \includegraphics[width=0.8\linewidth]{fig0009.png}
   \caption{Коефициенти за уравнение на права}
 \label{fig0009}
 \end{figure}
@@ -113,7 +375,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0010.png}
+  \includegraphics[width=0.8\linewidth]{fig0010.png}
   \caption{Включване на първа синус функция}
 \label{fig0010}
 \end{figure}
@@ -122,7 +384,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0011.png}
+  \includegraphics[width=0.8\linewidth]{fig0011.png}
   \caption{Включване на втора синус функция}
 \label{fig0011}
 \end{figure}
@@ -131,7 +393,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0012.png}
+  \includegraphics[width=0.8\linewidth]{fig0012.png}
   \caption{Включване на трета синус функция}
 \label{fig0012}
 \end{figure}
@@ -144,7 +406,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0001.png}
+  \includegraphics[width=0.8\linewidth]{fig0001.png}
   \caption{Модул за оптимизация в LibreOffice Calc}
 \label{fig001}
 \end{figure}
@@ -153,7 +415,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0002.png}
+  \includegraphics[width=0.8\linewidth]{fig0002.png}
   \caption{Стойности на Bitcoin виртуалната валута}
 \label{fig002}
 \end{figure}
@@ -162,7 +424,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0003.png}
+  \includegraphics[width=0.8\linewidth]{fig0003.png}
   \caption{Параметри на трислойната изкуствена невронна мрежа}
 \label{fig003}
 \end{figure}
@@ -185,7 +447,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0004.png}
+  \includegraphics[width=0.8\linewidth]{fig0004.png}
   \caption{Резултат от мащабирането на времевия ред}
 \label{fig004}
 \end{figure}
@@ -267,7 +529,7 @@ y(t) = B.t + C + A_1.sin(\omega_1.t+\varphi_1) + A_2.sin(\omega_2.t+\varphi_2) +
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0005.png}
+  \includegraphics[width=0.8\linewidth]{fig0005.png}
   \caption{Фрагменти за тренировъчните примери}
 \label{fig005}
 \end{figure}
@@ -313,7 +575,7 @@ def BuildAnnModel():
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0006.png}
+  \includegraphics[width=0.8\linewidth]{fig0006.png}
   \caption{Избор на клетки за оптимизация и параметри на оптимизиращите алгоритми}
 \label{fig006}
 \end{figure}
@@ -328,7 +590,7 @@ def BuildAnnModel():
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0013.png}
+  \includegraphics[width=0.8\linewidth]{fig0013.png}
   \caption{Активационна функция затихваща синусоида}
 \label{fig0013}
 \end{figure}
@@ -339,7 +601,7 @@ def BuildAnnModel():
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0014.png}
+  \includegraphics[width=0.8\linewidth]{fig0014.png}
   \caption{Първа производна на активационната функция от тип затихваща синусоида}
 \label{fig0014}
 \end{figure}
@@ -348,7 +610,7 @@ def BuildAnnModel():
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0015.png}
+  \includegraphics[width=0.8\linewidth]{fig0015.png}
   \caption{Алтернатива за първа производна на активационната функция от тип затихваща синусоида}
 \label{fig0015}
 \end{figure}
@@ -357,7 +619,7 @@ def BuildAnnModel():
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0016.png}
+  \includegraphics[width=0.8\linewidth]{fig0016.png}
   \caption{Грешка допусната от мрежата}
 \label{fig0016}
 \end{figure}
@@ -366,7 +628,7 @@ def BuildAnnModel():
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0017.png}
+  \includegraphics[width=0.8\linewidth]{fig0017.png}
   \caption{Отклонение от секундата}
 \label{fig0017}
 \end{figure}
@@ -375,7 +637,7 @@ def BuildAnnModel():
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1.0\linewidth]{fig0018.png}
+  \includegraphics[width=0.8\linewidth]{fig0018.png}
   \caption{Брой епохи}
 \label{fig0018}
 \end{figure}
