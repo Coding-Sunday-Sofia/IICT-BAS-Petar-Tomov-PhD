@@ -164,4 +164,111 @@ JSON In Java).
 
 Изкуствената невронна мрежа се изгражда с помощта на библиотеката Encog Machine Learning Framework. В самата библиотека е реализирано обучение с обратно разпространение на грешката. Допълнително две библиотеки реализират глобална евристична оптимизация – Apache Common Genetic Algorithms и MOEA Framework.
 
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0069.png}
+  \caption{Съотношение между цената EUR/USD}
+\label{fig0069}
+\end{figure}
 
+Преди да постъпят в системата, входните данни от финансовия времеви ред имат определени измерени стойности (Фиг. \ref{fig0069}). Тези стойности варират в различни диапазони за различните финансови инструменти. Тази разлика е една от причините времевия ред да бъде преоразмерен (Листинг \ref{list0016}).
+
+\begin{lstlisting}[caption=Преоразмеряване на входните данни, language=Java, basicstyle=\tiny, label=list0016]
+double input[][] = new double[values.length -
+		 (inputSize + outputSize)][inputSize];
+double target[][] = new double[values.length -
+		 (inputSize + outputSize)][outputSize];
+for (int i = 0; i < values.length - (inputSize + outputSize); i++) {
+	for (int j = 0; j < inputSize; j++) {
+		 input[i][j] = range[0] + (range[1] - range[0]) *
+					(values[i + j] - min) / (max - min);
+	}
+	for (int j = 0; j < outputSize; j++) {
+		 target[i][j] = range[0] + (range[1] - range[0]) *
+					(values[i + inputSize + j] - min) / (max - min);
+	}
+}
+examples = new BasicMLDataSet(input, target);
+\end{lstlisting}
+
+След преоразмеряването на входните данни, те биват оформени на групи тренировъчни и тестови примери. Един пример се състои от входни данни и очаквани изходни резултати (Фиг. \ref{fig0071}).
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0071.png}
+  \caption{Оформяне на тренировъчни и тестови примери}
+\label{fig0071}
+\end{figure}
+
+Типът на изкуствената невронна мрежа е трислоен перцептрон (Фиг. \ref{fig0070}), а параметрите на самата топология се зареждат от отдалечения сървър. Топологиите на различните мрежи се задават от оператор на сървъра. Като функция за активация се използва хиперболичен тангенс, тъй като той е симетричен спрямо абцисната ос (Листинг \ref{list0017}).
+
+\begin{lstlisting}[caption=Конструиране на изкуствена невронна мрежа, language=Java, basicstyle=\tiny, label=list0017]
+Map<NeuronType, Integer> counters = new HashMap<NeuronType, Integer>();
+counters.put(NeuronType.REGULAR, 0);
+counters.put(NeuronType.BIAS, 0);
+counters.put(NeuronType.INPUT, 0);
+counters.put(NeuronType.OUTPUT, 0);
+
+for (int type : InputData.NEURONS) {
+	counters.put(NeuronType.valueOf(type),
+			  counters.get(NeuronType.valueOf(type)) + 1);
+}
+
+int inputSize = counters.get(NeuronType.INPUT);
+int hiddenSize = counters.get(NeuronType.REGULAR);
+int outputSize = counters.get(NeuronType.OUTPUT);
+
+network.addLayer(new BasicLayer(null,
+		 true, inputSize));
+network.addLayer(new BasicLayer(new ActivationTANH(),
+		 true, hiddenSize));
+network.addLayer(new BasicLayer(new ActivationTANH(),
+		 false, outputSize));
+network.getStructure().finalizeStructure();
+network.reset();
+\end{lstlisting}
+
+Обучението на изкуствената невронна мрежа се извърша чрез превключване между алгоритъма за обратно разпространение на грешката и алгоритъма за глобална евристична оптимизация. 
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.8\linewidth]{fig0070.png}
+  \caption{Трислоен перцептрон}
+\label{fig0070}
+\end{figure}
+
+Обратното разпространение на грешката е реализирано в самата библиотека Encog Machine Learning Framework (Листинг \ref{list0018}).
+
+\begin{lstlisting}[caption=Обучение с обратно разпространение на грешката, language=Java, basicstyle=\tiny, label=list0018]
+train = new ResilientPropagation(network, examples);
+train.iteration();
+train.finishTraining();
+\end{lstlisting}
+
+Обучението с алгоритъма за еволюция на разликите и генетичните алгоритми е организирано под формата на полиморфизъм в езика Java (Листинг \ref{list0019}).
+
+\begin{lstlisting}[caption=Обучение с еволюционни евристични алгоритми, language=Java, basicstyle=\tiny, label=list0019]
+List<Double> weights = new ArrayList<Double>();
+for (int layer = 0; layer < network.getLayerCount() - 1; layer++) {
+	 int bias = network.isLayerBiased(layer) ? 1 : 0;
+	 for (int from = 0; from < network.getLayerNeuronCount(layer) + bias; from++) {
+		  for (int to = 0; to < network.getLayerNeuronCount(layer + 1); to++) {
+				weights.add(network.getWeight(layer, from, to));
+		  }
+	 }
+}
+
+Optimizer optimizer = new MoeaOptimizer(optimizationTimeout, network, train, populationSize, crossoverRate, scalingFactor);
+weights = optimizer.optimize(weights);
+
+for (int layer = 0, index = 0; layer < network.getLayerCount() - 1; layer++) {
+	 int bias = network.isLayerBiased(layer) ? 1 : 0;
+	 for (int from = 0; from < network.getLayerNeuronCount(layer) + bias; from++) {
+		  for (int to = 0; to < network.getLayerNeuronCount(layer + 1); to++, index++) {
+				network.setWeight(layer, from, to, weights.get(index));
+		  }
+	 }
+}
+\end{lstlisting}
+
+Еволюционните алгоритми в своята популация съдържат комплекти от тегла на изкуствената невронна мрежа. Комплектите тегла се зареждат последователно в структурата на изкуствената невронна мрежа и се оценява общата грешка която мрежата допуска. Тази обща грешка на мрежата е жизнената стойност на всеки комплект тегла в популацията. Колкото по-малка е общата грешка, толкова по-добре се представя съответния комплект тегла. Най-добрите намерени решения се изпращат за съхранение на отдалечения сървър. 
