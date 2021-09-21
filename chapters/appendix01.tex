@@ -1,0 +1,2666 @@
+\addcontentsline{toc}{chapter}{Приложение А - програмен код}
+\chapter*{Приложение А - програмен код}
+\markboth{Приложение А - програмен код}{}
+
+\textbf{\underline{ForecastDatabaseHelper.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
+
+/**
+ * Database helper class.
+ */
+class ForecastDatabaseHelper extends SQLiteOpenHelper {
+    /**
+     * Database integer version.
+     */
+    public static final int DATABASE_VERSION = 1;
+    /**
+     * Database file name.
+     */
+    public static final String DATABASE_NAME = "Forecast.db";
+    /**
+     * Drop rates table SQL pattern.
+     */
+    static final String SQL_DELETE_RATES = "DROP TABLE IF EXISTS "
+            + RatesColumns.TABLE_NAME;
+    /**
+     * Drop rates table SQL pattern.
+     */
+    static final String SQL_DELETE_ANNS = "DROP TABLE IF EXISTS "
+            + ANNsColumns.TABLE_NAME;
+    /**
+     * Create rates table SQL patter.
+     */
+    private static final String SQL_CREATE_RATES = "CREATE TABLE "
+            + RatesColumns.TABLE_NAME + " (" + RatesColumns._ID
+            + " INTEGER NOT NULL," + RatesColumns.COLUMN_NAME_SYMBOL
+            + " TEXT, " + RatesColumns.COLUMN_NAME_PERIOD
+            + " INTEGER, " + RatesColumns.COLUMN_NAME_TIME + " TEXT, "
+            + RatesColumns.COLUMN_NAME_OPEN + " TEXT, "
+            + RatesColumns.COLUMN_NAME_LOW + " TEXT, "
+            + RatesColumns.COLUMN_NAME_HIGH + " TEXT, "
+            + RatesColumns.COLUMN_NAME_CLOSE + " TEXT, "
+            + RatesColumns.COLUMN_NAME_VOLUME + " TEXT PRIMARY KEY ("
+            + RatesColumns.COLUMN_NAME_SYMBOL + ", "
+            + RatesColumns.COLUMN_NAME_PERIOD + "))";
+
+    /**
+     * Create ANNs table SQL patter.
+     */
+    private static final String SQL_CREATE_ANNS = "CREATE TABLE "
+            + ANNsColumns.TABLE_NAME + " (" + ANNsColumns._ID
+            + " INTEGER PRIMARY KEY," + ANNsColumns.COLUMN_NAME_SYMBOL
+            + " TEXT, " + ANNsColumns.COLUMN_NAME_PERIOD
+            + " INTEGER, " + ANNsColumns.COLUMN_NAME_NEURONS + " TEXT, "
+            + ANNsColumns.COLUMN_NAME_ACTIVITIES
+            + " TEXT, " + ANNsColumns.COLUMN_NAME_WEIGHTS
+            + " TEXT, FOREIGN KEY (" + ANNsColumns.COLUMN_NAME_SYMBOL
+            + ") REFERENCES " + RatesColumns.TABLE_NAME
+            + "(" + RatesColumns.COLUMN_NAME_SYMBOL + "), FOREIGN KEY ("
+            + ANNsColumns.COLUMN_NAME_PERIOD + ") REFERENCES "
+            + RatesColumns.TABLE_NAME + "("
+            + RatesColumns.COLUMN_NAME_PERIOD + "))";
+
+    /**
+     * Constructor.
+     *
+     * @param context Context of database helper usage.
+     */
+    public ForecastDatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        db.execSQL(SQL_CREATE_RATES);
+        db.execSQL(SQL_CREATE_ANNS);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL(SQL_DELETE_ANNS);
+        db.execSQL(SQL_DELETE_RATES);
+        onCreate(db);
+    }
+
+    /**
+     * Rates table columns description class.
+     */
+    public static abstract class RatesColumns implements BaseColumns {
+        public static final String TABLE_NAME = "rates";
+        public static final String COLUMN_NAME_SYMBOL = "symbol";
+        public static final String COLUMN_NAME_PERIOD = "period";
+        public static final String COLUMN_NAME_TIME = "time";
+        public static final String COLUMN_NAME_OPEN = "open";
+        public static final String COLUMN_NAME_LOW = "low";
+        public static final String COLUMN_NAME_HIGH = "high";
+        public static final String COLUMN_NAME_CLOSE = "close";
+        public static final String COLUMN_NAME_VOLUME = "volume";
+    }
+
+    /**
+     * ANN table columns description class.
+     */
+    public static abstract class ANNsColumns implements BaseColumns {
+        public static final String TABLE_NAME = "anns";
+        public static final String COLUMN_NAME_SYMBOL = "symbol";
+        public static final String COLUMN_NAME_PERIOD = "period";
+        public static final String COLUMN_NAME_NEURONS = "neurons";
+        public static final String COLUMN_NAME_ACTIVITIES = "activities";
+        public static final String COLUMN_NAME_WEIGHTS = "weights";
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{ProgressReportingWallpaperConfigureActivity.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade;
+
+import android.app.WallpaperManager;
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.preference.PreferenceActivity;
+import android.preference.PreferenceManager;
+
+/**
+ * Options screen.
+ */
+public class ProgressReportingWallpaperConfigureActivity extends PreferenceActivity {
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        addPreferencesFromResource(R.layout.wallpaper_configure);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(ProgressReportingWallpaperConfigureActivity.this);
+
+        /*
+         * Remove our wallpaper.
+         */
+        if (preferences.getBoolean("set_wallpaper", false) == false) {
+            stopService(new Intent(ProgressReportingWallpaperConfigureActivity.this,
+                    ProgressReportingWallpaperService.class));
+            startActivity(new Intent(WallpaperManager.ACTION_LIVE_WALLPAPER_CHOOSER));
+            ProgressReportingWallpaperConfigureActivity.this.finish();
+
+            return;
+        }
+
+        /*
+         * Run wallpaper service.
+         */
+        Intent intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
+        intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                new ComponentName(ProgressReportingWallpaperConfigureActivity.this,
+                        ProgressReportingWallpaperService.class));
+        startActivity(intent);
+        ProgressReportingWallpaperConfigureActivity.this.finish();
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{ProgressReportingWallpaperService.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade;
+
+import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.os.Handler;
+import android.preference.PreferenceManager;
+import android.service.wallpaper.WallpaperService;
+import android.view.SurfaceHolder;
+
+import java.util.Calendar;
+import java.util.Random;
+
+import eu.veldsoft.vitosha.trade.communication.HttpHelper;
+import eu.veldsoft.vitosha.trade.communication.TimePeriod;
+import eu.veldsoft.vitosha.trade.dummy.InputData;
+import eu.veldsoft.vitosha.trade.engine.Predictor;
+
+/**
+ * Background calculation unit.
+ */
+public class ProgressReportingWallpaperService extends WallpaperService {
+
+    /**
+     * Pseudo-random number generator.
+     */
+    private static final Random PRNG = new Random();
+
+    /**
+     * Space between visual spots in pixels.
+     */
+    private static final int GAP_BETWEEN_PANELS = 10;
+
+    /**
+     * Default training time delay.
+     */
+    private static final long DEFAULT_DELAY = 86400000L;
+
+    //TODO Images should be loaded from a remote image server.
+
+    /**
+     * Identifiers for the background resources images to be used as background.
+     */
+    private static final int[] IMAGES_IDS = {
+            R.drawable.vitosha_mountain_dimitar_petarchev_001,
+            R.drawable.vitosha_mountain_dimitar_petarchev_002,
+            R.drawable.vitosha_mountain_dimitar_petarchev_003,
+            R.drawable.vitosha_mountain_dimitar_petarchev_004,
+    };
+
+    // TODO Put all colors in the settings dialog.
+
+    /**
+     * Panel background color in order to be a part transparent from the real background.
+     */
+    private static final int PANEL_BACKGROUND_COLOR =
+            Color.argb(63, 0, 0, 0);
+
+    /**
+     * Text color to be used in panels.
+     */
+    private static final int PANEL_TEXT_COLOR =
+            Color.argb(95, 255, 255, 255);
+
+    /**
+     * Time delay between neural network trainings.
+     */
+    private static long delay = 0;
+
+    /**
+     * Visible surface width.
+     */
+    private static int screenWidth = 0;
+
+    /**
+     * Visible surface height.
+     */
+    private static int screenHeight = 0;
+
+    /**
+     * Wallpaper visibility flag.
+     */
+    private static boolean visible = false;
+
+    /**
+     * List of information panels rectangles information.
+     */
+    private static Rect[] panels = {new Rect(), new Rect(), new Rect()};
+
+    /**
+     * Forecasting object.
+     */
+    private static Predictor predictor = new Predictor();
+
+    /**
+     * Initialize common class members.
+     */
+    private void initialize() {
+        /*
+         * Load ANN structure and time series data from the remote server.
+         */
+        HttpHelper helper = new HttpHelper(PreferenceManager
+                .getDefaultSharedPreferences(
+                        ProgressReportingWallpaperService.this).
+                        getString("server_url", "localhost"));
+
+        if (helper.load() == false) {
+            // TODO Use local data if the remote server is not available.
+        }
+
+        predictor.initialize();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreate() {
+        super.onCreate();
+
+        initialize();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Engine onCreateEngine() {
+        return new WallpaperEngine();
+    }
+
+    /**
+     * Wallpaper engine class.
+     */
+    private class WallpaperEngine extends Engine {
+
+        /**
+         * Thread handler.
+         */
+        private final Handler handler = new Handler();
+
+        /**
+         * Paint object.
+         */
+        private final Paint paint = new Paint();
+
+        /**
+         * Neural network training cycle thread.
+         */
+        private final Runnable trainer = new Runnable() {
+            @Override
+            public void run() {
+                predictor.predict();
+                draw();
+                predictor.train();
+            }
+        };
+
+        /**
+         * Constructor without parameters.
+         */
+        public WallpaperEngine() {
+            super();
+            handler.post(trainer);
+        }
+
+        /**
+         * Common drawing procedure.
+         */
+        private void draw() {
+            SurfaceHolder holder = getSurfaceHolder();
+            Canvas canvas = null;
+
+            try {
+                canvas = holder.lockCanvas();
+
+                if (canvas != null) {
+                    drawBackground(canvas);
+                    drawPanels(canvas);
+                    drawCurrencyPairInfo(canvas);
+                    drawForecast(canvas);
+                    drawAnn(canvas);
+                }
+            } finally {
+                if (canvas != null) {
+                    holder.unlockCanvasAndPost(canvas);
+                }
+            }
+
+            handler.removeCallbacks(trainer);
+            if (visible == true) {
+                handler.postDelayed(trainer, delay);
+            }
+        }
+
+        /**
+         * Background drawing procedure.
+         *
+         * @param canvas Canvas object for background.
+         */
+        private void drawBackground(Canvas canvas) {
+            // TODO Images should be loaded from an image server.
+            /*
+             * Change picture according the day in the year.
+             */
+            Bitmap image = BitmapFactory.decodeResource(
+                    ProgressReportingWallpaperService.this.getResources(),
+                    IMAGES_IDS[Calendar.getInstance().
+                            get(Calendar.DAY_OF_YEAR) % IMAGES_IDS.length]);
+
+            /*
+             * Select random top-left corner for image clip.
+             */
+            int left = PRNG.nextInt(image.getWidth() - screenWidth);
+            int top = PRNG.nextInt(image.getHeight() - screenHeight);
+
+            /*
+             * Clip part of the image.
+             */
+            canvas.drawBitmap(image, new Rect(left, top,
+                            left + screenWidth - 1,
+                            top + screenHeight - 1),
+                    new Rect(0, 0, screenWidth - 1,
+                            screenHeight - 1), null);
+        }
+
+        /**
+         * Panels drawing procedure.
+         *
+         * @param canvas Canvas object for panels drawing.
+         */
+        private void drawPanels(Canvas canvas) {
+            /*
+             * Panels.
+             */
+            paint.setColor(PANEL_BACKGROUND_COLOR);
+            for (Rect rectangle : panels) {
+                canvas.drawRect(rectangle, paint);
+            }
+        }
+
+        /**
+         * Currency pair info drawing procedure.
+         *
+         * @param canvas Canvas object for currency pair info drawing.
+         */
+        private void drawCurrencyPairInfo(Canvas canvas) {
+            /*
+             * Time series info.
+             */
+            int textSize = (panels[0].bottom - panels[0].top) / 5;
+            paint.setTextSize(textSize);
+            paint.setColor(PANEL_TEXT_COLOR);
+            canvas.drawText("" + InputData.SYMBOL,
+                    GAP_BETWEEN_PANELS + panels[0].left,
+                    GAP_BETWEEN_PANELS + panels[0].top + textSize, paint);
+            canvas.drawText("" + TimePeriod.value(InputData.PERIOD),
+                    GAP_BETWEEN_PANELS + panels[0].left,
+                    GAP_BETWEEN_PANELS + panels[0].top + 2 * textSize, paint);
+        }
+
+        /**
+         * Forecast drawing procedure.
+         *
+         * @param canvas Canvas object for forecast drawing.
+         */
+        private void drawForecast(Canvas canvas) {
+            int width = panels[1].right - panels[1].left;
+            int height = panels[1].bottom - panels[1].top;
+            int stride = width;
+
+            int[] pixels = new int[width * height];
+            predictor.drawForecast(pixels, width, height);
+            Bitmap bitmap = Bitmap.createBitmap(pixels, 0, stride, width, height, Bitmap.Config.ARGB_8888);
+            canvas.drawBitmap(bitmap, new Rect(0,0,width,height), panels[1], paint);
+        }
+
+        /**
+         * Neural network drawing procedure.
+         *
+         * @param canvas Canvas object for neural network drawing.
+         */
+        private void drawAnn(Canvas canvas) {
+            int width = panels[2].right - panels[2].left;
+            int height = panels[2].bottom - panels[2].top;
+            int stride = width;
+
+            int[] pixels = new int[width * height];
+            predictor.drawAnn(pixels, width, height);
+            Bitmap bitmap = Bitmap.createBitmap(pixels, 0, stride, width, height, Bitmap.Config.ARGB_8888);
+            canvas.drawBitmap(bitmap, new Rect(0,0,width,height), panels[2], paint);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onVisibilityChanged(boolean visible) {
+            ProgressReportingWallpaperService.visible = visible;
+
+            /*
+             * Do calculations only if the wallpaper is visible.
+             */
+            if (visible == true) {
+                handler.post(trainer);
+            } else {
+                handler.removeCallbacks(trainer);
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onSurfaceDestroyed(SurfaceHolder holder) {
+            super.onSurfaceDestroyed(holder);
+            ProgressReportingWallpaperService.visible = false;
+            handler.removeCallbacks(trainer);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        public void onSurfaceChanged(SurfaceHolder holder,
+                                     int format, int width, int height) {
+            super.onSurfaceChanged(holder, format, width, height);
+
+            screenWidth = width;
+            screenHeight = height;
+
+            SharedPreferences preferences = PreferenceManager
+                    .getDefaultSharedPreferences(
+                            ProgressReportingWallpaperService.this);
+
+            int panelsSideSize = Integer.parseInt(
+                    preferences.getString("sizing", "100"));
+
+            switch (preferences.getString("positioning", "0 0")) {
+                case "lt":
+                    panels[0].left = GAP_BETWEEN_PANELS;
+                    panels[0].top = GAP_BETWEEN_PANELS;
+                    panels[0].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[0].bottom = panelsSideSize + GAP_BETWEEN_PANELS;
+
+                    panels[1].left = GAP_BETWEEN_PANELS;
+                    panels[1].top = 2 * GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[1].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[1].bottom = 2 * GAP_BETWEEN_PANELS + 2 * panelsSideSize;
+
+                    panels[2].left = GAP_BETWEEN_PANELS;
+                    panels[2].top = 3 * GAP_BETWEEN_PANELS + 2 * panelsSideSize;
+                    panels[2].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[2].bottom = 3 * GAP_BETWEEN_PANELS + 3 * panelsSideSize;
+                    break;
+                case "ct":
+                    panels[0].left = width / 2 - panelsSideSize / 2;
+                    panels[0].top = GAP_BETWEEN_PANELS;
+                    panels[0].right = width / 2 + panelsSideSize / 2;
+                    panels[0].bottom = panelsSideSize + GAP_BETWEEN_PANELS;
+
+                    panels[1].left = width / 2 - panelsSideSize / 2;
+                    panels[1].top = 2 * GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[1].right = width / 2 + panelsSideSize / 2;
+                    panels[1].bottom = 2 * GAP_BETWEEN_PANELS + 2 * panelsSideSize;
+
+                    panels[2].left = width / 2 - panelsSideSize / 2;
+                    panels[2].top = 3 * GAP_BETWEEN_PANELS + 2 * panelsSideSize;
+                    panels[2].right = width / 2 + panelsSideSize / 2;
+                    panels[2].bottom = 3 * GAP_BETWEEN_PANELS + 3 * panelsSideSize;
+                    break;
+                case "rt":
+                    panels[0].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[0].top = GAP_BETWEEN_PANELS;
+                    panels[0].right = width - GAP_BETWEEN_PANELS;
+                    panels[0].bottom = panelsSideSize + GAP_BETWEEN_PANELS;
+
+                    panels[1].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[1].top = 2 * GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[1].right = width - GAP_BETWEEN_PANELS;
+                    panels[1].bottom = 2 * GAP_BETWEEN_PANELS + 2 * panelsSideSize;
+
+                    panels[2].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[2].top = 3 * GAP_BETWEEN_PANELS + 2 * panelsSideSize;
+                    panels[2].right = width - GAP_BETWEEN_PANELS;
+                    panels[2].bottom = 3 * GAP_BETWEEN_PANELS + 3 * panelsSideSize;
+                    break;
+                case "lc":
+                    panels[0].left = GAP_BETWEEN_PANELS;
+                    panels[0].top = height / 2 - panelsSideSize / 2 -
+                            GAP_BETWEEN_PANELS - panelsSideSize;
+                    panels[0].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[0].bottom = height / 2 - panelsSideSize / 2 -
+                            GAP_BETWEEN_PANELS;
+
+                    panels[1].left = GAP_BETWEEN_PANELS;
+                    panels[1].top = height / 2 - panelsSideSize / 2;
+                    panels[1].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[1].bottom = height / 2 + panelsSideSize / 2;
+
+                    panels[2].left = GAP_BETWEEN_PANELS;
+                    panels[2].top = height / 2 + panelsSideSize / 2 +
+                            GAP_BETWEEN_PANELS;
+                    panels[2].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[2].bottom = height / 2 + panelsSideSize / 2 +
+                            GAP_BETWEEN_PANELS + panelsSideSize;
+                    break;
+                case "cc":
+                    panels[0].left = width / 2 - panelsSideSize / 2;
+                    panels[0].top = height / 2 - panelsSideSize / 2 -
+                            GAP_BETWEEN_PANELS - panelsSideSize;
+                    panels[0].right = width / 2 + panelsSideSize / 2;
+                    panels[0].bottom = height / 2 - panelsSideSize / 2 -
+                            GAP_BETWEEN_PANELS;
+
+                    panels[1].left = width / 2 - panelsSideSize / 2;
+                    panels[1].top = height / 2 - panelsSideSize / 2;
+                    panels[1].right = width / 2 + panelsSideSize / 2;
+                    panels[1].bottom = height / 2 + panelsSideSize / 2;
+
+                    panels[2].left = width / 2 - panelsSideSize / 2;
+                    panels[2].top = height / 2 + panelsSideSize / 2 +
+                            GAP_BETWEEN_PANELS;
+                    panels[2].right = width / 2 + panelsSideSize / 2;
+                    panels[2].bottom = height / 2 + panelsSideSize / 2 +
+                            GAP_BETWEEN_PANELS + panelsSideSize;
+                    break;
+                case "rc":
+                    panels[0].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[0].top = height / 2 - panelsSideSize / 2 -
+                            GAP_BETWEEN_PANELS - panelsSideSize;
+                    panels[0].right = width - GAP_BETWEEN_PANELS;
+                    panels[0].bottom = height / 2 - panelsSideSize / 2 -
+                            GAP_BETWEEN_PANELS;
+
+                    panels[1].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[1].top = height / 2 - panelsSideSize / 2;
+                    panels[1].right = width - GAP_BETWEEN_PANELS;
+                    panels[1].bottom = height / 2 + panelsSideSize / 2;
+
+                    panels[2].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[2].top = height / 2 + panelsSideSize / 2 +
+                            GAP_BETWEEN_PANELS;
+                    panels[2].right = width - GAP_BETWEEN_PANELS;
+                    panels[2].bottom = height / 2 + panelsSideSize / 2 +
+                            GAP_BETWEEN_PANELS + panelsSideSize;
+                    break;
+                case "lb":
+                    panels[0].left = GAP_BETWEEN_PANELS;
+                    panels[0].top = height - 3 * GAP_BETWEEN_PANELS - 3 *
+                            panelsSideSize;
+                    panels[0].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[0].bottom = height - 3 * GAP_BETWEEN_PANELS - 2 *
+                            panelsSideSize;
+
+                    panels[1].left = GAP_BETWEEN_PANELS;
+                    panels[1].top = height - 2 * GAP_BETWEEN_PANELS - 2 *
+                            panelsSideSize;
+                    panels[1].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[1].bottom = height - 2 * GAP_BETWEEN_PANELS -
+                            panelsSideSize;
+
+                    panels[2].left = GAP_BETWEEN_PANELS;
+                    panels[2].top = height - GAP_BETWEEN_PANELS - panelsSideSize;
+                    panels[2].right = GAP_BETWEEN_PANELS + panelsSideSize;
+                    panels[2].bottom = height - GAP_BETWEEN_PANELS;
+                    break;
+                case "cb":
+                    panels[0].left = width / 2 - panelsSideSize / 2;
+                    panels[0].top = height - 3 * GAP_BETWEEN_PANELS - 3 *
+                            panelsSideSize;
+                    panels[0].right = width / 2 + panelsSideSize / 2;
+                    panels[0].bottom = height - 3 * GAP_BETWEEN_PANELS - 2 *
+                            panelsSideSize;
+
+                    panels[1].left = width / 2 - panelsSideSize / 2;
+                    panels[1].top = height - 2 * GAP_BETWEEN_PANELS - 2 *
+                            panelsSideSize;
+                    panels[1].right = width / 2 + panelsSideSize / 2;
+                    panels[1].bottom = height - 2 * GAP_BETWEEN_PANELS -
+                            panelsSideSize;
+
+                    panels[2].left = width / 2 - panelsSideSize / 2;
+                    panels[2].top = height - GAP_BETWEEN_PANELS - panelsSideSize;
+                    panels[2].right = width / 2 + panelsSideSize / 2;
+                    panels[2].bottom = height - GAP_BETWEEN_PANELS;
+                    break;
+                case "rb":
+                    panels[0].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[0].top = height - 3 * GAP_BETWEEN_PANELS - 3 *
+                            panelsSideSize;
+                    panels[0].right = width - GAP_BETWEEN_PANELS;
+                    panels[0].bottom = height - 3 * GAP_BETWEEN_PANELS - 2 *
+                            panelsSideSize;
+
+                    panels[1].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[1].top = height - 2 * GAP_BETWEEN_PANELS - 2 *
+                            panelsSideSize;
+                    panels[1].right = width - GAP_BETWEEN_PANELS;
+                    panels[1].bottom = height - 2 * GAP_BETWEEN_PANELS -
+                            panelsSideSize;
+
+                    panels[2].left = width - panelsSideSize - GAP_BETWEEN_PANELS;
+                    panels[2].top = height - GAP_BETWEEN_PANELS - panelsSideSize;
+                    panels[2].right = width - GAP_BETWEEN_PANELS;
+                    panels[2].bottom = height - GAP_BETWEEN_PANELS;
+                    break;
+                default:
+                    break;
+            }
+
+            delay = Long.parseLong(preferences.getString("loading",
+                    "" + DEFAULT_DELAY));
+        }
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{VotingWidget.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade;
+
+import android.appwidget.AppWidgetManager;
+import android.appwidget.AppWidgetProvider;
+import android.content.Context;
+import android.widget.RemoteViews;
+
+import eu.veldsoft.vitosha.trade.dummy.InputData;
+
+/**
+ * User voting widget.
+ */
+public class VotingWidget extends AppWidgetProvider {
+
+    /**
+     *
+     * @param context
+     * @param appWidgetManager
+     * @param appWidgetId
+     */
+    static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
+                                int appWidgetId) {
+
+        CharSequence widgetText = VotingWidgetConfigureActivity.loadTitlePref(context, appWidgetId);
+
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.voting_widget);
+        views.setTextViewText(R.id.appwidget_text, widgetText);
+
+        //TODO Information should be taken from other source.
+        views.setTextViewText(R.id.symbol_ticker, InputData.SYMBOL);
+        views.setTextViewText(R.id.current_value, ""+InputData.OPEN[InputData.OPEN.length-1]);
+
+        appWidgetManager.updateAppWidget(appWidgetId, views);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
+        for (int appWidgetId : appWidgetIds) {
+            updateAppWidget(context, appWidgetManager, appWidgetId);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDeleted(Context context, int[] appWidgetIds) {
+        for (int appWidgetId : appWidgetIds) {
+            VotingWidgetConfigureActivity.deleteTitlePref(context, appWidgetId);
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onEnabled(Context context) {
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onDisabled(Context context) {
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{VotingWidgetConfigureActivity.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade;
+
+import android.app.Activity;
+import android.appwidget.AppWidgetManager;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+
+/**
+ * Voting widget preference activity.
+ */
+public class VotingWidgetConfigureActivity extends Activity {
+
+    /** */
+    private static final String PREFS_NAME = "eu.veldsoft.vitosha.trade.VotingWidget";
+
+    /** */
+    private static final String PREF_PREFIX_KEY = "appwidget_";
+
+    /** */
+    int mAppWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID;
+
+    /** */
+    EditText mAppWidgetText;
+
+    /** */
+    View.OnClickListener mOnClickListener = new View.OnClickListener() {
+        public void onClick(View v) {
+            final Context context = VotingWidgetConfigureActivity.this;
+
+            String widgetText = mAppWidgetText.getText().toString();
+            saveTitlePref(context, mAppWidgetId, widgetText);
+
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+            VotingWidget.updateAppWidget(context, appWidgetManager, mAppWidgetId);
+
+            Intent resultValue = new Intent();
+            resultValue.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+            setResult(RESULT_OK, resultValue);
+            finish();
+        }
+    };
+
+    /** */
+    public VotingWidgetConfigureActivity() {
+        super();
+    }
+
+    /**
+     *
+     * @param context
+     * @param appWidgetId
+     * @param text
+     */
+    static void saveTitlePref(Context context, int appWidgetId, String text) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.putString(PREF_PREFIX_KEY + appWidgetId, text);
+        prefs.apply();
+    }
+
+    /**
+     *
+     * @param context
+     * @param appWidgetId
+     * @return
+     */
+    static String loadTitlePref(Context context, int appWidgetId) {
+        SharedPreferences prefs = context.getSharedPreferences(PREFS_NAME, 0);
+        String titleValue = prefs.getString(PREF_PREFIX_KEY + appWidgetId, null);
+        if (titleValue != null) {
+            return titleValue;
+        } else {
+            return "";
+        }
+    }
+
+    /**
+     *
+     * @param context
+     * @param appWidgetId
+     */
+    static void deleteTitlePref(Context context, int appWidgetId) {
+        SharedPreferences.Editor prefs = context.getSharedPreferences(PREFS_NAME, 0).edit();
+        prefs.remove(PREF_PREFIX_KEY + appWidgetId);
+        prefs.apply();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+
+        setResult(RESULT_CANCELED);
+
+        setContentView(R.layout.voting_widget_configure);
+        mAppWidgetText = (EditText) findViewById(R.id.appwidget_text);
+        findViewById(R.id.add_button).setOnClickListener(mOnClickListener);
+
+        Intent intent = getIntent();
+        Bundle extras = intent.getExtras();
+        if (extras != null) {
+            mAppWidgetId = extras.getInt(
+                    AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+        }
+
+        if (mAppWidgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            finish();
+            return;
+        }
+
+        mAppWidgetText.setText(loadTitlePref(VotingWidgetConfigureActivity.this, mAppWidgetId));
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{ConsolePredictor.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade;
+
+import eu.veldsoft.vitosha.trade.dummy.InputData;
+import eu.veldsoft.vitosha.trade.engine.Predictor;
+
+/**
+ * Single entry point class for command line application interface.
+ */
+public class ConsolePredictor {
+    public static void main(String[] args) {
+        Predictor predictor = new Predictor();
+        predictor.initialize();
+        predictor.train();
+        predictor.predict();
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{HttpHelper.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade.communication;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import cz.msebera.android.httpclient.HttpResponse;
+import cz.msebera.android.httpclient.NameValuePair;
+import cz.msebera.android.httpclient.client.ClientProtocolException;
+import cz.msebera.android.httpclient.client.HttpClient;
+import cz.msebera.android.httpclient.client.entity.UrlEncodedFormEntity;
+import cz.msebera.android.httpclient.client.methods.HttpPost;
+import cz.msebera.android.httpclient.impl.client.DefaultHttpClient;
+import cz.msebera.android.httpclient.message.BasicNameValuePair;
+import cz.msebera.android.httpclient.util.EntityUtils;
+import eu.veldsoft.vitosha.trade.dummy.InputData;
+
+/**
+ * It is used for HTTP communication with the remote server.
+ */
+public class HttpHelper {
+    /**
+     * Number of ANN found as response of the request.
+     */
+    private static final String JSON_SIZE_KEY = "size";
+    /**
+     * Time series symbol ticker.
+     */
+    private static final String JSON_SYMBOL_KEY = "symbol";
+    /**
+     * Time series period as integer number of minutes.
+     */
+    private static final String JSON_PERIOD_KEY = "period";
+    /**
+     * Fitness value of the ANN.
+     */
+    private static final String JSON_FITNESS_KEY = "fitness";
+    /**
+     * Array with neurons flags.
+     */
+    private static final String JSON_FLAGS_KEY = "flags";
+    /**
+     * Array with ANN weights.
+     */
+    private static final String JSON_WEIGHTS_KEY = "weights";
+    /**
+     * Array with ANN connections activities.
+     */
+    private static final String JSON_ACTIVITIES_KEY = "activities";
+    /**
+     * Number of training examples.
+     */
+    private static final String JSON_NUMBER_OF_EXAMPLES_KEY = "numberOfExamples";
+    /**
+     * Time array.
+     */
+    private static final String JSON_TIME_KEY = "time";
+    /**
+     * Open array.
+     */
+    private static final String JSON_OPEN_KEY = "open";
+    /**
+     * Low array.
+     */
+    private static final String JSON_LOW_KEY = "low";
+    /**
+     * High array.
+     */
+    private static final String JSON_HIGH_KEY = "high";
+    /**
+     * Close array.
+     */
+    private static final String JSON_CLOSE_KEY = "close";
+    /**
+     * Volume array.
+     */
+    private static final String JSON_VOLUME_KEY = "volume";
+    /**
+     * Load random ANN remote server script name.
+     */
+    private final String LOAD_RANDOM_ANN_SCRIPT = "logic/json_load_random_ann.php";
+    /**
+     * Loading training set for particular ticker and time period.
+     */
+    private final String LOAD_TRAINING_SET_SCRIPT = "logic/json_load_training_set.php";
+    /**
+     * Report retrained ANN remote server script name.
+     */
+    private final String SAVE_RETRAINED_ANN_SCRIPT = "logic/save_retrained_ann.php";
+    /**
+     * Number of neurons for the ANN.
+     */
+    private final String JSON_NUMBER_OF_NEURONS_KEY = "numberOfNeurons";
+    /**
+     * Remote server URl address.
+     */
+    private final String url;
+
+    /**
+     * Constructor with all parameters needed.
+     *
+     * @param url Remote server URL address.
+     */
+    public HttpHelper(String url) {
+        this.url = url;
+    }
+
+    /*
+     * Load remote data into input data structure.
+     *
+     * @return True if the loading was successful, false otherwise.
+     */
+    public boolean load() {
+        String symbol = InputData.SYMBOL;
+        int period = InputData.PERIOD;
+        int[] flags = InputData.NEURONS;
+        double[][] weights = InputData.WEIGHTS;
+        double[][] activities = InputData.ACTIVITIES;
+        long[] time = InputData.TIME;
+        double[] open = InputData.OPEN;
+        double[] low = InputData.LOW;
+        double[] high = InputData.HIGH;
+        double[] close = InputData.HIGH;
+        double[] volume = InputData.VOLUME;
+
+        HttpClient client = new DefaultHttpClient();
+        client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+
+        /*
+         * Load randomly selected ANN.
+         */
+        HttpPost post = new HttpPost("http://" + url.trim() + "/" + LOAD_RANDOM_ANN_SCRIPT);
+
+        try {
+            HttpResponse response = client.execute(post);
+
+            JSONObject result = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
+
+            int size = result.getInt(JSON_SIZE_KEY);
+
+            /*
+             * If there is no ANN on the server side nothing can be loaded.
+             */
+            if (size <= 0) {
+                return false;
+            }
+
+            /*
+             * Extract JSON from HTTP response.
+             */
+            symbol = result.getString(JSON_SYMBOL_KEY);
+
+            period = result.getInt(JSON_PERIOD_KEY);
+
+            double fitness = result.getDouble(JSON_FITNESS_KEY);
+
+            int numberOfNeurons = result.getInt(JSON_NUMBER_OF_NEURONS_KEY);
+
+            flags = new int[numberOfNeurons];
+            JSONArray array1 = result.getJSONArray(JSON_FLAGS_KEY);
+            for (int i = 0; i < array1.length(); i++) {
+                flags[i] = array1.getInt(i);
+            }
+
+            //TODO Matrix transpose is possible.
+            weights = new double[numberOfNeurons][numberOfNeurons];
+            JSONArray array2 = result.getJSONArray(JSON_WEIGHTS_KEY);
+            for (int j = 0; j < array2.length(); j++) {
+                JSONArray array3 = array2.getJSONArray(j);
+                for (int i = 0; i < array3.length(); i++) {
+                    weights[i][j] = array3.getDouble(i);
+                }
+            }
+
+            //TODO Matrix transpose is possible.
+            activities = new double[numberOfNeurons][numberOfNeurons];
+            JSONArray array4 = result.getJSONArray(JSON_ACTIVITIES_KEY);
+            for (int j = 0; j < array4.length(); j++) {
+                JSONArray array5 = array4.getJSONArray(j);
+                for (int i = 0; i < array5.length(); i++) {
+                    activities[i][j] = array5.getDouble(i);
+                }
+            }
+        } catch (ClientProtocolException exception) {
+            return false;
+        } catch (IOException exception) {
+            return false;
+        } catch (JSONException exception) {
+            return false;
+        } catch (Exception exception) {
+            return false;
+        }
+
+        /*
+         * Load training set for the selected ANN.
+         */
+        post = new HttpPost("http://" + url.trim() + "/" + LOAD_TRAINING_SET_SCRIPT);
+        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+        pairs.add(new BasicNameValuePair("symbol", symbol));
+        pairs.add(new BasicNameValuePair("period", "" + period));
+        try {
+            post.setEntity(new UrlEncodedFormEntity(pairs));
+        } catch (UnsupportedEncodingException e) {
+            return false;
+        }
+
+        try {
+            HttpResponse response = client.execute(post);
+
+            JSONObject result = new JSONObject(EntityUtils.toString(response.getEntity(), "UTF-8"));
+
+            int size = result.getInt(JSON_NUMBER_OF_EXAMPLES_KEY);
+
+            /*
+             * If there is no ANN training set on the server side nothing can be loaded.
+             */
+            if (size <= 0) {
+                return false;
+            }
+
+            time = new long[size];
+            JSONArray array1 = result.getJSONArray(JSON_TIME_KEY);
+            for (int i = 0; i < array1.length(); i++) {
+                time[i] = array1.getLong(i);
+            }
+
+            open = new double[size];
+            JSONArray array2 = result.getJSONArray(JSON_OPEN_KEY);
+            for (int i = 0; i < array2.length(); i++) {
+                open[i] = array2.getDouble(i);
+            }
+
+            low = new double[size];
+            JSONArray array3 = result.getJSONArray(JSON_LOW_KEY);
+            for (int i = 0; i < array3.length(); i++) {
+                low[i] = array3.getDouble(i);
+            }
+
+            high = new double[size];
+            JSONArray array4 = result.getJSONArray(JSON_HIGH_KEY);
+            for (int i = 0; i < array4.length(); i++) {
+                high[i] = array4.getDouble(i);
+            }
+
+            close = new double[size];
+            JSONArray array5 = result.getJSONArray(JSON_CLOSE_KEY);
+            for (int i = 0; i < array5.length(); i++) {
+                close[i] = array5.getDouble(i);
+            }
+
+            volume = new double[size];
+            JSONArray array6 = result.getJSONArray(JSON_VOLUME_KEY);
+            for (int i = 0; i < array6.length(); i++) {
+                volume[i] = array6.getDouble(i);
+            }
+        } catch (ClientProtocolException exception) {
+            return false;
+        } catch (IOException exception) {
+            return false;
+        } catch (JSONException exception) {
+            return false;
+        } catch (Exception exception) {
+            return false;
+        }
+
+        /*
+         * Load data in the global data structure.
+         */
+        InputData.SYMBOL = symbol;
+        InputData.PERIOD = period;
+        InputData.NEURONS = flags;
+        InputData.WEIGHTS = weights;
+        InputData.ACTIVITIES = activities;
+        InputData.TIME = time;
+        InputData.OPEN = open;
+        InputData.LOW = low;
+        InputData.HIGH = high;
+        InputData.CLOSE = close;
+        InputData.VOLUME = volume;
+        InputData.RATES = new double[][]{InputData.OPEN, InputData.LOW, InputData.HIGH, InputData.CLOSE};
+
+        return true;
+    }
+
+    /**
+     * Store calculated ANN weights on the remote web server.
+     *
+     * @return True if the saving was successful, false otherwise.
+     */
+    public boolean store() {
+        HttpClient client = new DefaultHttpClient();
+        client.getParams().setParameter("http.protocol.content-charset", "UTF-8");
+
+        /*
+         * Store retrained ANN.
+         */
+        HttpPost post = new HttpPost("http://" + url.trim() + "/" + SAVE_RETRAINED_ANN_SCRIPT);
+        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+
+        pairs.add(new BasicNameValuePair("symbol", InputData.SYMBOL));
+        pairs.add(new BasicNameValuePair("period", "" + InputData.PERIOD));
+        pairs.add(new BasicNameValuePair("fitness", "" + InputData.FITNESS));
+        pairs.add(new BasicNameValuePair("number_of_neurons", "" + InputData.NEURONS.length));
+
+        String flags = "";
+        for (int i = 0; i < InputData.NEURONS.length; i++) {
+            flags += InputData.NEURONS[i] + " ";
+        }
+        pairs.add(new BasicNameValuePair("flags", "" + flags.trim()));
+
+        //TODO Matrix transpose is possible.
+        String weights = "";
+        for (int j = 0; j < InputData.NEURONS.length; j++) {
+            for (int i = 0; i < InputData.NEURONS.length; i++) {
+                weights += InputData.WEIGHTS[i][j] + " ";
+            }
+            weights = weights.trim() + "\r\n";
+        }
+        pairs.add(new BasicNameValuePair("weights", "" + weights.trim()));
+
+        //TODO Matrix transpose is possible.
+        String activites = "";
+        for (int j = 0; j < InputData.NEURONS.length; j++) {
+            for (int i = 0; i < InputData.NEURONS.length; i++) {
+                activites += InputData.ACTIVITIES[i][j] + " ";
+            }
+            activites = activites.trim() + "\r\n";
+        }
+        pairs.add(new BasicNameValuePair("activites", "" + activites.trim()));
+
+        try {
+            post.setEntity(new UrlEncodedFormEntity(pairs));
+            client.execute(post);
+        } catch (ClientProtocolException exception) {
+            return false;
+        } catch (UnsupportedEncodingException exception) {
+            return false;
+        } catch (IOException exception) {
+            return false;
+        }
+
+        return true;
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{NeuronType.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade.communication;
+
+/**
+ * Numeric constants for neurons type.
+ */
+public enum NeuronType {
+
+    /**
+     * Regular neuron flag.
+     */
+    REGULAR(0x00),
+
+    /**
+     * Bias neuron flag.
+     */
+    BIAS(0x01),
+
+    /**
+     * Input neuron flag.
+     */
+    INPUT(0x02),
+
+    /**
+     * Input and bias neuron flag.
+     */
+    INPUT_BIAS(0x03),
+
+    /**
+     * Output neuron flag.
+     */
+    OUTPUT(0x04),
+
+    /**
+     * Output and bias neuron flag.
+     */
+    OUTPUT_BIAS(0x05),
+
+    /**
+     * Output and input neuron flag.
+     */
+    OUTPUT_INPUT(0x06),
+
+    /**
+     * Output, input and bias neuron flag.
+     */
+    OUTPUT_INPUT_BIAS(0x07);
+
+    /*
+     * Numeric value representation.
+     */
+    private final int value;
+
+    /**
+     * Constructor with all parameters.
+     *
+     * @param value
+     */
+    private NeuronType(int value) {
+        this.value = value;
+    }
+
+    /**
+     * Value factory function.
+     *
+     * @param type Numerical type representation.
+     * @return Corresponding enumeration or regular if there is no correspondence.
+     */
+    public static NeuronType valueOf(int type) {
+        for (NeuronType item : NeuronType.values()) {
+            if (item.value() == type) {
+                return item;
+            }
+        }
+
+        return REGULAR;
+    }
+
+    /**
+     * Value getter.
+     *
+     * @return Numeric representation of the type.
+     */
+    public int value() {
+        return value;
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{TimePeriod.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade.communication;
+
+/**
+ * Time series fixed time periods.
+ */
+public enum TimePeriod {
+
+    /**
+     * No time period at all.
+     */
+    NONE(0, ""),
+
+    /**
+     * One minute.
+     */
+    M1(1, "M1"),
+
+    /**
+     * Five minutes.
+     */
+    M5(5, "M5"),
+
+    /**
+     * Fifteen minutes.
+     */
+    M15(15, "M15"),
+
+    /**
+     * Thirty minutes.
+     */
+    M30(30, "M30"),
+
+    /**
+     * One hour.
+     */
+    H1(60, "H1"),
+
+    /**
+     * Four hours.
+     */
+    H4(240, "H4"),
+
+    /**
+     * One day.
+     */
+    D1(1440, "D1"),
+
+    /**
+     * One week.
+     */
+    W1(10080, "W1"),
+
+    /**
+     * One month.
+     */
+    MN1(43200, "MN1");
+
+    /**
+     * Time period as number of minutes.
+     */
+    private int minutes;
+
+    /**
+     * Time period as text description.
+     */
+    private String name;
+
+    /**
+     * Constructor with all parameters.
+     *
+     * @param minutes Minutes as numbers.
+     * @param name    Interval as name.
+     */
+    private TimePeriod(int minutes, String name) {
+        this.minutes = minutes;
+        this.name = name;
+    }
+
+    /**
+     * Factory function for object reference from time interval.
+     *
+     * @param minutes Time interval in minutes.
+     * @return Time period as object.
+     * @throws RuntimeException Rise exception if there is no such time interval in minutes.
+     */
+    public static TimePeriod value(int minutes) throws RuntimeException {
+        for (TimePeriod item : TimePeriod.values()) {
+            if (item.minutes == minutes) {
+                return item;
+            }
+        }
+
+        // TODO Report exception.
+
+        return NONE;
+    }
+
+    /**
+     * Factory function for object reference from form interval name.
+     *
+     * @param name Time period name.
+     * @return Time period as object.
+     * @throws RuntimeException Rise exception if there is no such time interval in minutes.
+     */
+    public static TimePeriod value(String name) throws RuntimeException {
+        for (TimePeriod item : TimePeriod.values()) {
+            if (name.equals(item.name) == true) {
+                return item;
+            }
+        }
+
+        // TODO Report exception.
+
+        return NONE;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public String toString() {
+        return name;
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{ApacheOptimizer.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade.engine;
+
+import org.apache.commons.math3.genetics.Chromosome;
+import org.apache.commons.math3.genetics.ElitisticListPopulation;
+import org.apache.commons.math3.genetics.FixedElapsedTime;
+import org.apache.commons.math3.genetics.GeneticAlgorithm;
+import org.apache.commons.math3.genetics.Population;
+import org.apache.commons.math3.genetics.TournamentSelection;
+import org.apache.commons.math3.genetics.UniformBinaryMutation;
+import org.apache.commons.math3.genetics.UniformCrossover;
+import org.apache.commons.math3.genetics.WeightsChromosome;
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.training.propagation.Propagation;
+
+import java.util.LinkedList;
+import java.util.List;
+
+/**
+ * Apache Common Math Genetic Algorithms based optimizer.
+ */
+public class ApacheOptimizer implements Optimizer {
+    /**
+     *
+     */
+    private final long optimizationTimeout;
+
+    /**
+     *
+     */
+    private final BasicNetwork network;
+
+    /**
+     *
+     */
+    private final Propagation train;
+
+    /**
+     *
+     */
+    private final int populationSize;
+
+    /**
+     *
+     */
+    private final int tournamentArity;
+
+    /**
+     *
+     */
+    private final double crossoverRate;
+
+    /**
+     *
+     */
+    private final double mutationRate;
+
+    /**
+     *
+     */
+    private final double elitismRate;
+
+    /**
+     * @param optimizationTimeout
+     * @param network
+     * @param train
+     * @param populationSize
+     * @param tournamentArity
+     * @param crossoverRate
+     * @param mutationRate
+     * @param elitismRate
+     */
+    public ApacheOptimizer(long optimizationTimeout, BasicNetwork network, Propagation train, int populationSize, int tournamentArity, double crossoverRate, double mutationRate, double elitismRate) {
+        this.optimizationTimeout = optimizationTimeout;
+        this.network = network;
+        this.train = train;
+        this.populationSize = populationSize;
+        this.tournamentArity = tournamentArity;
+        this.crossoverRate = crossoverRate;
+        this.mutationRate = mutationRate;
+        this.elitismRate = elitismRate;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Double> optimize(List<Double> weights) {
+
+        /*
+         * Generate population.
+         */
+        List<Chromosome> chromosomes = new LinkedList<Chromosome>();
+        for (int i = 0; i < populationSize; i++) {
+            chromosomes.add(new WeightsChromosome(weights, true, network, train));
+        }
+        Population initial = new ElitisticListPopulation(chromosomes,
+                2 * chromosomes.size(), elitismRate);
+
+        /*
+         * Initialize genetic algorithm.
+         */
+        GeneticAlgorithm algorithm = new GeneticAlgorithm(
+                new UniformCrossover<WeightsChromosome>(0.5),
+                crossoverRate, new UniformBinaryMutation(),
+                mutationRate, new TournamentSelection(tournamentArity));
+
+        /*
+         * Run optimization.
+         */
+        Population optimized = algorithm.evolve(initial,
+                new FixedElapsedTime(optimizationTimeout));
+
+        /*
+         * Obtain result.
+         */
+        weights = ((WeightsChromosome)
+                optimized.getFittestChromosome()).
+                getRepresentation();
+
+        return weights;
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{MoeaOptimizer.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade.engine;
+
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.training.propagation.Propagation;
+import org.moeaframework.algorithm.AbstractAlgorithm;
+import org.moeaframework.algorithm.single.AggregateObjectiveComparator;
+import org.moeaframework.algorithm.single.DifferentialEvolution;
+import org.moeaframework.algorithm.single.LinearDominanceComparator;
+import org.moeaframework.core.Initialization;
+import org.moeaframework.core.NondominatedPopulation;
+import org.moeaframework.core.Problem;
+import org.moeaframework.core.Solution;
+import org.moeaframework.core.operator.InjectedInitialization;
+import org.moeaframework.core.operator.real.DifferentialEvolutionSelection;
+import org.moeaframework.core.operator.real.DifferentialEvolutionVariation;
+import org.moeaframework.core.variable.EncodingUtils;
+import org.moeaframework.problem.misc.AnnErrorMinimizationProblem;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * MOEA Framework based optimizer.
+ */
+public class MoeaOptimizer implements Optimizer {
+    /**
+     *
+     */
+    private final long optimizationTimeout;
+
+    /**
+     *
+     */
+    private final BasicNetwork network;
+
+    /**
+     *
+     */
+    private final Propagation train;
+
+    /**
+     *
+     */
+    private final int populationSize;
+
+    /**
+     *
+     */
+    private final double crossoverRate;
+
+    /**
+     *
+     */
+    private final double scalingFactor;
+
+    /**
+     *
+     * @param optimizationTimeout
+     * @param network
+     * @param train
+     * @param populationSize
+     * @param crossoverRate
+     * @param scalingFactor
+     */
+    public MoeaOptimizer(long optimizationTimeout, BasicNetwork network, Propagation train, int populationSize, double crossoverRate, double scalingFactor) {
+        this.optimizationTimeout = optimizationTimeout;
+        this.network = network;
+        this.train = train;
+        this.populationSize = populationSize;
+        this.crossoverRate = crossoverRate;
+        this.scalingFactor = scalingFactor;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<Double> optimize(List<Double> weights) {
+        Problem problem = new AnnErrorMinimizationProblem(weights, network, train);
+
+        List<Solution> solutions = new ArrayList<Solution>();
+        for (int i = 0; i < populationSize; i++) {
+            Solution solution = problem.newSolution();
+            solutions.add(solution);
+        }
+
+        AggregateObjectiveComparator comparator = new LinearDominanceComparator();
+        Initialization initialization = new InjectedInitialization(problem, populationSize, solutions);
+        DifferentialEvolutionSelection selection = new DifferentialEvolutionSelection();
+        DifferentialEvolutionVariation variation = new DifferentialEvolutionVariation(crossoverRate, scalingFactor);
+
+        AbstractAlgorithm algorithm = new DifferentialEvolution(problem, comparator, initialization, selection, variation);
+
+        long stop = System.currentTimeMillis() + optimizationTimeout;
+        while (System.currentTimeMillis() < stop) {
+            algorithm.step();
+        }
+
+        weights = new ArrayList<Double>();
+        NondominatedPopulation population = algorithm.getResult();
+        if (population.size() > 0) {
+            for (Double value : EncodingUtils.getReal(population.get(0))) {
+                weights.add(value);
+            }
+        }
+
+        return weights;
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{Optimizer.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade.engine;
+
+import java.util.List;
+
+/**
+ * Optimizer interface.
+ */
+public interface Optimizer {
+    /**
+     * Single cycle of optimization.
+     *
+     * @param weights Initial weights.
+     * @return Weights after single cycle of optimization.
+     */
+    public List<Double> optimize(List<Double> weights);
+}
+\end{verbatim}
+
+\textbf{\underline{Predictor.java}}
+\begin{verbatim}
+package eu.veldsoft.vitosha.trade.engine;
+
+import org.encog.engine.network.activation.ActivationFunction;
+import org.encog.engine.network.activation.ActivationTANH;
+import org.encog.ml.data.MLData;
+import org.encog.ml.data.MLDataSet;
+import org.encog.ml.data.basic.BasicMLData;
+import org.encog.ml.data.basic.BasicMLDataSet;
+import org.encog.ml.data.market.MarketDataDescription;
+import org.encog.ml.data.market.MarketDataType;
+import org.encog.ml.data.market.MarketMLDataSet;
+import org.encog.ml.data.market.TickerSymbol;
+import org.encog.ml.data.market.loader.LoadedMarketData;
+import org.encog.ml.data.market.loader.MarketLoader;
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.layers.BasicLayer;
+import org.encog.neural.networks.training.propagation.Propagation;
+import org.encog.neural.networks.training.propagation.resilient.ResilientPropagation;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+
+import eu.veldsoft.vitosha.trade.communication.NeuronType;
+import eu.veldsoft.vitosha.trade.dummy.InputData;
+
+/**
+ * Forecasting engine main class.
+ */
+public class Predictor {
+
+    /**
+     * Pseudo-random number generator.
+     */
+    private static final Random PRNG = new Random();
+
+    // TODO Put all colors in the settings dialog.
+
+    /**
+     * Colors used in the charts.
+     */
+    private static final int CHART_COLORS[] = {
+            (95 << 24 | 0 << 16 | 255 << 8 | 0),
+            (95 << 24 | 255 << 16 | 0 << 8 | 0),
+    };
+
+    /**
+     * Colors used to visualize neural networks.
+     */
+    private static final int ANN_COLORS[] = {
+            (95 << 24 | 0 << 16 | 255 << 8 | 0),
+            (95 << 24 | 255 << 16 | 255 << 8 | 255),
+            (95 << 24 | 0 << 16 | 0 << 8 | 255),
+            (95 << 24 | 255 << 16 | 255 << 8 | 255),
+            (95 << 24 | 255 << 16 | 0 << 8 | 0),
+    };
+
+    /**
+     * Neural network object.
+     */
+    private static BasicNetwork network = new BasicNetwork();
+
+    /**
+     * Training examples data set.
+     */
+    private static MLDataSet examples = null;
+
+    /**
+     * Data of the forecast.
+     */
+    private static MLData forecast = null;
+
+    /**
+     * Calculated output data.
+     */
+    private static MLData output = null;
+
+    /**
+     * Training rule object.
+     */
+    private static Propagation train = null;
+
+    /**
+     * Lowest and highest values of particular activation function. It is used for time series scaling.
+     *
+     * @param activation Activation function object.
+     * @return Array with two values - lowest in the first index and highest in the second index.
+     */
+    private static double[] findLowAndHigh(ActivationFunction activation) {
+        /*
+         * Use range of double values.
+         */
+        double check[] = {
+                Double.MIN_VALUE, -0.000001, -0.00001, -0.0001,
+                -0.001, -0.01, -0.1, -1, -10, -100, -1000,
+                -10000, -100000, -1000000, 0, 0.000001, 0.00001,
+                0.0001, 0.001, 0.01, 0.1, 1, 10, 100, 1000, 10000,
+                100000, 1000000, Double.MAX_VALUE};
+
+        /*
+         * Map the range of double values to activation function output.
+         */
+        activation.activationFunction(check, 0, check.length);
+
+        /*
+         * Soft the result of the activation fuction output.
+         */
+        Arrays.sort(check);
+
+        /*
+         * Return minimum and maximum values of the activation function output.
+         */
+        return new double[]{check[0], check[check.length - 1]};
+    }
+
+    /**
+     * Initialize common class members.
+     */
+    public void initialize() {
+        Map<NeuronType, Integer> counters = new HashMap<NeuronType, Integer>();
+        counters.put(NeuronType.REGULAR, 0);
+        counters.put(NeuronType.BIAS, 0);
+        counters.put(NeuronType.INPUT, 0);
+        counters.put(NeuronType.OUTPUT, 0);
+
+        for (int type : InputData.NEURONS) {
+            counters.put(NeuronType.valueOf(type),
+                    counters.get(NeuronType.valueOf(type)) + 1);
+        }
+
+        int inputSize = counters.get(NeuronType.INPUT);
+        int hiddenSize = counters.get(NeuronType.REGULAR);
+        int outputSize = counters.get(NeuronType.OUTPUT);
+
+        /*
+         * Network construction.
+         */
+        network.addLayer(new BasicLayer(null,
+                true, inputSize));
+        network.addLayer(new BasicLayer(new ActivationTANH(),
+                true, hiddenSize));
+        network.addLayer(new BasicLayer(new ActivationTANH(),
+                false, outputSize));
+        network.getStructure().finalizeStructure();
+        network.reset();
+
+        // TODO Load weights to the network.
+
+        double values[] = InputData.RATES[PRNG.nextInt(InputData.RATES.length)];
+
+        /*
+         * Data construction.
+         */
+        MarketMLDataSet data = new MarketMLDataSet(new MarketLoader() {
+            @Override
+            public Collection<LoadedMarketData> load(TickerSymbol symbol,
+                                                     Set<MarketDataType> types, Date start,
+                                                     Date end) {
+                Collection<LoadedMarketData> result = new
+                        ArrayList<LoadedMarketData>();
+
+                for (int i = 0; i < InputData.TIME.length; i++) {
+                    /*
+                     * Data outside of the desired time frame are not loaded.
+                     */
+                    if (InputData.TIME[i] < start.getTime() || end.getTime() < InputData.TIME[i]) {
+                        continue;
+                    }
+
+                    LoadedMarketData value = new LoadedMarketData(new
+                            Date(InputData.TIME[i]), symbol);
+
+                    value.setData(MarketDataType.CLOSE, InputData.CLOSE[i]);
+                    value.setData(MarketDataType.HIGH, InputData.HIGH[i]);
+                    value.setData(MarketDataType.LOW, InputData.LOW[i]);
+                    value.setData(MarketDataType.OPEN, InputData.OPEN[i]);
+                    value.setData(MarketDataType.VOLUME, InputData.VOLUME[i]);
+                    value.setData(MarketDataType.ADJUSTED_CLOSE, InputData.CLOSE[i]);
+
+                    result.add(value);
+                }
+
+                return result;
+            }
+        }, inputSize, outputSize);
+
+        MarketDataDescription description = new MarketDataDescription(new
+                TickerSymbol(InputData.SYMBOL),
+                (new MarketDataType[]{MarketDataType.CLOSE, MarketDataType.HIGH,
+                        MarketDataType.LOW,
+                        MarketDataType.OPEN})[(int) (Math.random() * 4)],
+                true, true);
+        data.addDescription(description);
+        data.load(new Date(InputData.TIME[0]), new
+                Date(InputData.TIME[InputData.TIME.length - 1]));
+        data.generate();
+
+        /*
+         * Normalize data.
+         */
+        double min = values[0];
+        double max = values[0];
+        for (double value : values) {
+            if (value < min) {
+                min = value;
+            }
+            if (value > max) {
+                max = value;
+            }
+        }
+
+        /*
+         * At the first index is the low value. At the second index is the high
+         * value.
+         *
+         * There is a problem with this approach, because some activation
+         * functions are zero if the argument is infinity.
+         *
+         * The fist layer has no activation function.
+         */
+        double range[] = findLowAndHigh(network.getActivation(2));
+
+        /*
+         * Prepare training set.
+         */
+        double input[][] = new double[values.length -
+                (inputSize + outputSize)][inputSize];
+        double target[][] = new double[values.length -
+                (inputSize + outputSize)][outputSize];
+        for (int i = 0; i < values.length - (inputSize + outputSize); i++) {
+            for (int j = 0; j < inputSize; j++) {
+                input[i][j] = range[0] + (range[1] - range[0]) *
+                        (values[i + j] - min) / (max - min);
+            }
+            for (int j = 0; j < outputSize; j++) {
+                target[i][j] = range[0] + (range[1] - range[0]) *
+                        (values[i + inputSize + j] - min) / (max - min);
+            }
+        }
+        examples = new BasicMLDataSet(input, target);
+
+        /*
+         * Prepare forecast set.
+         */
+        input = new double[1][inputSize];
+        for (int j = 0; j < inputSize; j++) {
+            input[0][j] = range[0] + (range[1] - range[0]) *
+                    (values[values.length - inputSize + j] - min) / (max - min);
+        }
+        forecast = new BasicMLData(input[0]);
+    }
+
+    /**
+     * Single neural network training cycle.
+     */
+    public void train() {
+        if (network == null) {
+            return;
+        }
+        if (examples == null) {
+            return;
+        }
+
+        train = new ResilientPropagation(network, examples);
+
+        /*
+         * Switch between backpropagation and genetic algorithm.
+         */
+        if (PRNG.nextBoolean() == true) {
+            train.iteration();
+            train.finishTraining();
+        } else {
+            int populationSize = 4 + PRNG.nextInt(33);
+            double elitismRate = PRNG.nextInt(100) / 1000D;
+            double crossoverRate = PRNG.nextInt(900) / 1000D;
+            double mutationRate = PRNG.nextInt(10) / 1000D;
+            int tournamentArity = PRNG.nextBoolean() ? 1 : 2;
+            double scalingFactor = PRNG.nextInt(500) / 1000D;
+            long optimizationTimeout = 1000;
+
+            /*
+             * Obtain ANN weights.
+             */
+            List<Double> weights = new ArrayList<Double>();
+            for (int layer = 0; layer < network.getLayerCount() - 1; layer++) {
+                int bias = network.isLayerBiased(layer) ? 1 : 0;
+                for (int from = 0; from < network.getLayerNeuronCount(layer) + bias; from++) {
+                    for (int to = 0; to < network.getLayerNeuronCount(layer + 1); to++) {
+                        weights.add(network.getWeight(layer, from, to));
+                    }
+                }
+            }
+
+            /* Do evolutionary optimization. */
+            Optimizer optimizer = new MoeaOptimizer(optimizationTimeout, network, train, populationSize, crossoverRate, scalingFactor);
+            weights = optimizer.optimize(weights);
+
+            /*
+             * Replace ANN weights.
+             */
+            for (int layer = 0, index = 0; layer < network.getLayerCount() - 1; layer++) {
+                int bias = network.isLayerBiased(layer) ? 1 : 0;
+                for (int from = 0; from < network.getLayerNeuronCount(layer) + bias; from++) {
+                    for (int to = 0; to < network.getLayerNeuronCount(layer + 1); to++, index++) {
+                        network.setWeight(layer, from, to, weights.get(index));
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Neural network prediction getter.
+     */
+    public void predict() {
+        if (network == null) {
+            return;
+        }
+        if (forecast == null) {
+            return;
+        }
+
+        output = network.compute(forecast);
+    }
+
+    /**
+     * Draw forecast.
+     *
+     * @param pixels Array with ARGB pixels.
+     * @param width  Drawing area width.
+     * @param height Drawing area height.
+     */
+    public void drawForecast(int[] pixels, int width, int height) {
+        if (network == null) {
+            return;
+        }
+        if (forecast == null) {
+            return;
+        }
+        if (output == null) {
+            return;
+        }
+
+        /*
+         * Output layer activation function is used because input layer
+         * has no activation function.
+         */
+        double range[] = findLowAndHigh(network.getActivation(2));
+
+        /*
+         * Total number of values to be visualized.
+         */
+        int numberOfValues = network.getLayerNeuronCount(0) +
+                network.getLayerNeuronCount(2);
+
+        int x = 0;
+        int y = 0;
+
+        /*
+         * Visualize past data.
+         */
+        for (int i = 0; forecast.getData() != null &&
+                i < forecast.getData().length; i++) {
+            int offset = (int) (height * (forecast.getData()[i] - range[0]) /
+                    (range[1] - range[0]));
+            for (int dx = 0; dx < width / numberOfValues; dx++) {
+                for (y = height - offset; y < height; y++) {
+                    pixels[x + y * width] = CHART_COLORS[0];
+                }
+                x++;
+            }
+        }
+
+        /*
+         * Visualize future data.
+         */
+        for (int i = 0; output.getData() != null &&
+                i < output.getData().length; i++) {
+            int offset = (int) (height * (output.getData()[i] - range[0]) /
+                    (range[1] - range[0]));
+            for (int dx = 0; dx < width / numberOfValues; dx++) {
+                for (y = height - offset; y < height; y++) {
+                    pixels[x + y * width] = CHART_COLORS[1];
+                }
+                x++;
+            }
+        }
+    }
+
+    /**
+     * Draw ANN topology.
+     *
+     * @param pixels Array with ARGB pixels.
+     * @param width  Drawing area width.
+     * @param height Drawing area height.
+     */
+    public void drawAnn(int[] pixels, int width, int height) {
+        if (network == null) {
+            return;
+        }
+        if (forecast == null) {
+            return;
+        }
+        if (output == null) {
+            return;
+        }
+
+        /*
+         * Artificial neural network.
+         */
+        double topology[][] = {
+                forecast.getData(),
+                new double[network.getLayerNeuronCount(0) *
+                        network.getLayerNeuronCount(1)],
+                new double[network.getLayerNeuronCount(1)],
+                new double[network.getLayerNeuronCount(1) *
+                        network.getLayerNeuronCount(2)],
+                output.getData()
+        };
+
+        /*
+         * At the first index is the low value. At the second index is
+         * the high value.
+         *
+         * There is a problem with this approach, because some activation
+         * functions are zero if the argument is infinity.
+         *
+         * The fist layer has no activation function.
+         */
+        double range[] = findLowAndHigh(network.getActivation(2));
+
+        /*
+         * Scale input layer data.
+         */
+        for (int i = 0; i < topology[0].length; i++) {
+            topology[0][i] = (topology[0][i] - range[0]) /
+                    (range[1] - range[0]);
+        }
+
+        /*
+         * Scale output layer data.
+         */
+        for (int i = 0; i < topology[4].length; i++) {
+            topology[4][i] = (topology[4][i] - range[0]) /
+                    (range[1] - range[0]);
+        }
+
+        for (int i = 0, from = 0, to = 0, bias = network.isLayerBiased(0) ? 1 : 0; i < topology[1].length; i++) {
+            if (to >= network.getLayerNeuronCount(1)) {
+                to = 0;
+                from++;
+            }
+            if ((from + bias) >= network.getLayerNeuronCount(0)) {
+                from = 0;
+            }
+            topology[1][i] = network.getWeight(0, from, to);
+            to++;
+        }
+
+        for (int i = 0, from = 0, to = 0, bias = network.isLayerBiased(1) ? 1 : 0; i < topology[3].length; i++) {
+            if (to >= network.getLayerNeuronCount(2)) {
+                to = 0;
+                from++;
+            }
+            if ((from + bias) >= network.getLayerNeuronCount(1)) {
+                from = 0;
+            }
+            topology[3][i] = network.getWeight(1, from, to);
+            to++;
+        }
+
+        /*
+         * Hidden layer values. Activation function of the second layer
+         * is used for scaling.
+         */
+        range = findLowAndHigh(network.getActivation(1));
+        for (int i = 0; i < topology[2].length; i++) {
+            topology[2][i] = (network.getLayerOutput(1, i) - range[0]) /
+                    (range[1] - range[0]);
+        }
+
+        /*
+         * Weights normalization.
+         */
+        double min = Double.MAX_VALUE;
+        double max = Double.MIN_VALUE;
+        for (double value : topology[1]) {
+            if (value < min) {
+                min = value;
+            }
+            if (value > max) {
+                max = value;
+            }
+        }
+        for (double value : topology[3]) {
+            if (value < min) {
+                min = value;
+            }
+            if (value > max) {
+                max = value;
+            }
+        }
+        for (int i = 0; i < topology[1].length; i++) {
+            topology[1][i] = (topology[1][i] - min) / (max - min);
+        }
+        for (int i = 0; i < topology[3].length; i++) {
+            topology[3][i] = (topology[3][i] - min) / (max - min);
+        }
+
+        for (int x = 0, k = 0; k < ANN_COLORS.length;
+             x += width / ANN_COLORS.length, k++) {
+            for (int dx = 0; dx < width / ANN_COLORS.length; dx++) {
+                for (int y = 0, l = 0; y < height &&
+                        l < topology[k].length; y += height / topology[k].length, l++) {
+                    for (int dy = 0; dy < height / topology[k].length; dy++) {
+                        int alpha = (int) (((ANN_COLORS[k] >> 24) & 0xFF) * topology[k][l]);
+                        int red = (int) (((ANN_COLORS[k] >> 16) & 0xFF) * topology[k][l]);
+                        int green = (int) (((ANN_COLORS[k] >> 8) & 0xFF) * topology[k][l]);
+                        int blue = (int) ((ANN_COLORS[k] & 0xFF) * topology[k][l]);
+
+                        int color = alpha << 24 | red << 16 | green << 8 | blue;
+
+                        pixels[(x + dx) + (y + dy) * width] = color;
+                    }
+                }
+            }
+        }
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{UniformBinaryMutation.java}}
+\begin{verbatim}
+package org.apache.commons.math3.genetics;
+
+import org.apache.commons.math3.exception.MathIllegalArgumentException;
+import org.apache.commons.math3.exception.util.LocalizedFormats;
+import org.apache.commons.math3.random.RandomGenerator;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Uniform random bits mutation applied over vector of double values.
+ */
+public class UniformBinaryMutation implements MutationPolicy {
+
+    /**
+     * Pseudo random number generator.
+     */
+    private static final RandomGenerator PRNG =
+            GeneticAlgorithm.getRandomGenerator();
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Chromosome mutate(Chromosome original)
+            throws MathIllegalArgumentException {
+        if (original instanceof WeightsChromosome == false) {
+            throw new MathIllegalArgumentException(
+                    LocalizedFormats.INVALID_BINARY_CHROMOSOME);
+        }
+
+        /*
+         * Deep copy of list values.
+         */
+        List<Double> representation = new ArrayList<Double>(
+                ((WeightsChromosome) original).getRepresentation());
+
+        /*
+         * Mutate a single bit in each chromosome value.
+         */
+        for (int i = 0; i < representation.size(); i++) {
+            double value = representation.get(i);
+            if (PRNG.nextBoolean() == true) {
+                value -= Double.MIN_VALUE;
+            } else {
+                value += Double.MIN_VALUE;
+            }
+            representation.set(i, value);
+        }
+
+        /*
+         * Construct new chromosome after mutation.
+         */
+        return ((WeightsChromosome) original).
+                newFixedLengthChromosome(representation);
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{WeightsChromosome.java}}
+\begin{verbatim}
+package org.apache.commons.math3.genetics;
+
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.training.Train;
+
+import java.util.List;
+
+/**
+ * Chromosome with double values of the weights from the artificial neural
+ * network.
+ */
+public class WeightsChromosome extends AbstractListChromosome<Double> {
+
+    /**
+     * Lazy initialization and buffering for the fitness value.
+     */
+    double fitness = -(Double.MAX_VALUE - 1);
+    /**
+     * Reference to external neural network object.
+     */
+    private BasicNetwork network = null;
+    /**
+     * Reference to external training strategy object.
+     */
+    private Train train = null;
+
+    /**
+     * Constructor used to initialize the chromosome with array of values.
+     *
+     * @param representation Values as array.
+     * @param network        Neural network reference.
+     * @param train          Neural network training strategy.
+     * @throws InvalidRepresentationException Rise an exception if the values
+     *                                        are not valid.
+     */
+    public WeightsChromosome(Double[] representation,
+                             BasicNetwork network, Train train)
+            throws InvalidRepresentationException {
+        super(representation);
+        this.network = network;
+        this.train = train;
+
+        if (network == null) {
+            throw new RuntimeException("Neural network should be provided for the fitness evaluation.");
+        }
+
+        if (train == null) {
+            throw new RuntimeException("Training object should be provided for the fitness evaluation.");
+        }
+
+        update();
+    }
+
+    /**
+     * Constructor used to initialize the chromosome with list of values.
+     *
+     * @param representation Values as list.
+     * @param network        Neural network reference.
+     * @param train          Neural network training strategy.
+     * @throws InvalidRepresentationException Rise an exception if the values
+     *                                        are not valid.
+     */
+    public WeightsChromosome(List<Double> representation,
+                             BasicNetwork network, Train train)
+            throws InvalidRepresentationException {
+        super(representation);
+        this.network = network;
+        this.train = train;
+
+        if (network == null) {
+            throw new RuntimeException("Neural network should be provided for the fitness evaluation.");
+        }
+
+        if (train == null) {
+            throw new RuntimeException("Training object should be provided for the fitness evaluation.");
+        }
+
+        update();
+    }
+
+    /**
+     * Constructor used to initialize the chromosome with list of values.
+     *
+     * @param representation Values as list.
+     * @param copy           Deep copy flag.
+     * @param network        Neural network reference.
+     * @param train          Neural network training strategy.
+     */
+    public WeightsChromosome(List<Double> representation, boolean copy,
+                             BasicNetwork network, Train train) {
+        super(representation, copy);
+        this.network = network;
+        this.train = train;
+
+        if (network == null) {
+            throw new RuntimeException("Neural network should be provided for the fitness evaluation.");
+        }
+
+        if (train == null) {
+            throw new RuntimeException("Training object should be provided for the fitness evaluation.");
+        }
+
+        update();
+    }
+
+    /**
+     * Fitness value update after chromosome representation change.
+     */
+    private void update() {
+        if (network == null) {
+            throw new RuntimeException("Neural network should be provided for the fitness evaluation.");
+        }
+
+        if (train == null) {
+            throw new RuntimeException("Training object should be provided for the fitness evaluation.");
+        }
+
+        /*
+         * Load weights from the internal representation into the network
+         * structure.
+         */
+        List<Double> weights = getRepresentation();
+        for (int layer = 0, index = 0; layer < network.getLayerCount() - 1; layer++) {
+            int bias = network.isLayerBiased(layer) ? 1 : 0;
+            for (int from = 0; from < network.getLayerNeuronCount(layer) + bias; from++) {
+                for (int to = 0; to < network.getLayerNeuronCount(layer + 1); to++, index++) {
+                    network.setWeight(layer, from, to, weights.get(index));
+                }
+            }
+        }
+
+        /*
+         * Iterate over the training set in order to calculate network error.
+         */
+        train.iteration();
+
+        /*
+         * Total ANN error is used as fitness value. The bigger the fitness, the better the chromosome.
+         */
+        fitness = -train.getError();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public double fitness() {
+        return fitness;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    protected void checkValidity(List<Double> values)
+            throws InvalidRepresentationException {
+        if (network == null) {
+            //TODO throw new RuntimeException("Neural network should be provided for the fitness evaluation.");
+            return;
+        }
+
+        /*
+         * Length of the values should match the number of weights in the neural
+         * network structure.
+         */
+        int counter = 0;
+        for (int layer = 0; layer < network.getLayerCount() - 1; layer++) {
+            int bias = network.isLayerBiased(layer) ? 1 : 0;
+            for (int from = 0; from < network.getLayerNeuronCount(layer) + bias; from++) {
+                for (int to = 0; to < network.getLayerNeuronCount(layer + 1); to++) {
+                    counter++;
+                }
+            }
+        }
+
+        if (values == null || counter != values.size()) {
+            // TODO Report the size problem.
+        }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public AbstractListChromosome<Double> newFixedLengthChromosome(
+            List<Double> values) {
+        return new WeightsChromosome(values, true, network, train);
+    }
+
+    /**
+     * Chromosome representation getter.
+     *
+     * @return List with chromosome values.
+     */
+    public List<Double> getRepresentation() {
+        return getRepresentation();
+    }
+}
+\end{verbatim}
+
+\textbf{\underline{AnnErrorMinimizationProblem.java}}
+\begin{verbatim}
+package org.moeaframework.problem.misc;
+
+import org.encog.neural.networks.BasicNetwork;
+import org.encog.neural.networks.training.propagation.Propagation;
+import org.moeaframework.core.Solution;
+import org.moeaframework.core.variable.EncodingUtils;
+import org.moeaframework.core.variable.RealVariable;
+import org.moeaframework.problem.AbstractProblem;
+
+import java.util.List;
+
+/**
+ * ANN error minimization problem.
+ */
+public class AnnErrorMinimizationProblem extends AbstractProblem {
+
+    /**
+     *
+     */
+    private BasicNetwork network;
+
+    /**
+     *
+     */
+    private Propagation train;
+
+    /**
+     *
+     */
+    private List<Double> initial;
+
+    /**
+     * @param solution
+     * @param network
+     * @param train
+     */
+    public AnnErrorMinimizationProblem(List<Double> solution, BasicNetwork network, Propagation train) {
+        this(solution.size(), 1);
+        initial = solution;
+        this.network = network;
+        this.train = train;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private AnnErrorMinimizationProblem(int numberOfVariables, int numberOfObjectives) {
+        super(numberOfVariables, numberOfObjectives);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    private AnnErrorMinimizationProblem(int numberOfVariables, int numberOfObjectives, int numberOfConstraints) {
+        super(numberOfVariables, numberOfObjectives, numberOfConstraints);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void evaluate(Solution solution) {
+        if (network == null) {
+            throw new RuntimeException("Neural network should be provided for the fitness evaluation.");
+        }
+
+        if (train == null) {
+            throw new RuntimeException("Training object should be provided for the fitness evaluation.");
+        }
+
+        /*
+         * Load weights from the internal representation into the network
+         * structure.
+         */
+        double[] weights = EncodingUtils.getReal(solution);
+        for (int layer = 0, index = 0; layer < network.getLayerCount() - 1; layer++) {
+            int bias = network.isLayerBiased(layer) ? 1 : 0;
+            for (int from = 0; from < network.getLayerNeuronCount(layer) + bias; from++) {
+                for (int to = 0; to < network.getLayerNeuronCount(layer + 1); to++, index++) {
+                    network.setWeight(layer, from, to, weights[index]);
+                }
+            }
+        }
+
+        /*
+         * Iterate over the training set in order to calculate network error.
+         */
+        train.iteration();
+
+        /*
+         * Total ANN error is used as fitness value. The bigger the fitness, the better the chromosome.
+         */
+        solution.setObjective(0, -train.getError());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public Solution newSolution() {
+        Solution solution = new Solution(initial.size(), 1, 0);
+        for (int i = 0; i < initial.size(); i++) {
+            solution.setVariable(i, new RealVariable(initial.get(i), -Double.MAX_VALUE + 1, Double.MAX_VALUE - 1));
+        }
+        return solution;
+    }
+}
+\end{verbatim}
