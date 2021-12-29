@@ -1,4 +1,4 @@
-﻿\chapter{Предложение за алгоритми при прогнозиране и обучение на изкуствени невронни мрежи}
+\chapter{Алгоритми при прогнозиране и обучение на изкуствени невронни мрежи}
 
 \section{Ограничения в пространството на променливите}
 
@@ -122,214 +122,386 @@ Brute-Force & 171780.33307271387 & 262621.61053178157 & \\
 \label{tab0003}
 \end{table}
 
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0019.png}
+%  \caption{Изчислително време [ms] за функцията Michalewicz с локално търсене}
+%\label{fig0019}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0020.png}
+%  \caption{Субоптимални стойности за функцията Michalewicz с локално търсене}
+%\label{fig0020}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0021.png}
+%  \caption{Брой изчисления на функцията Michalewicz с локално търсене}
+%\label{fig0021}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0022.png}
+%  \caption{Изчислително време [ms] за функцията Ackley с локално търсене}
+%\label{fig0022}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0023.png}
+%  \caption{Субоптимални стойности за функцията Ackley с локално търсене}
+%\label{fig0023}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0024.png}
+%  \caption{Брой изчисления на функцията Ackley с локално търсене}
+%\label{fig0024}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0025.png}
+%  \caption{Изчислително време [ms] за функцията Schwefel с локално търсене}
+%\label{fig0025}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0026.png}
+%  \caption{Субоптимални стойности за функцията Schwefel с локално търсене}
+%\label{fig0026}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0027.png}
+%  \caption{Брой изчисления на функцията Schwefel с локално търсене}
+%\label{fig0027}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0028.png}
+%  \caption{Изчислително време [ms] за функцията Rastrigin с локално търсене}
+%\label{fig0028}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0029.png}
+%  \caption{Субоптимални стойности за функцията Rastrigin с локално търсене}
+%\label{fig0029}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0030.png}
+%  \caption{Брой изчисления на функцията Rastrigin с локално търсене}
+%\label{fig0030}
+%\end{figure}
+%
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0031.png}
+%  \caption{Изчислително време [ms] за функцията Griewank с локално търсене}
+%\label{fig0031}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0032.png}
+%  \caption{Субоптимални стойности за функцията Griewank с локално търсене}
+%\label{fig0032}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0033.png}
+%  \caption{Брой изчисления на функцията Griewank с локално търсене}
+%\label{fig0033}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0034.png}
+%  \caption{Изчислително време [ms] за функцията Michalewicz с пълно изчерпване}
+%\label{fig0034}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0035.png}
+%  \caption{Субоптимални стойности за функцията Michalewicz с пълно изчерпване}
+%\label{fig0035}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0036.png}
+%  \caption{Брой изчисления на функцията Michalewicz с пълно изчерпване}
+%\label{fig0036}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0037.png}
+%  \caption{Изчислително време [ms] за функцията Ackley с пълно изчерпване}
+%\label{fig0037}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0038.png}
+%  \caption{Субоптимални стойности за функцията Ackley с пълно изчерпване}
+%\label{fig0038}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0039.png}
+%  \caption{Брой изчисления на функцията Ackley с пълно изчерпване}
+%\label{fig0039}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0040.png}
+%  \caption{Изчислително време [ms] за функцията Schwefel с пълно изчерпване}
+%\label{fig0040}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0041.png}
+%  \caption{Субоптимални стойности за функцията Schwefel с пълно изчерпване}
+%\label{fig0041}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0042.png}
+%  \caption{Брой изчисления на функцията Schwefel с пълно изчерпване}
+%\label{fig0042}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0043.png}
+%  \caption{Изчислително време [ms] за функцията Rastrigin с пълно изчерпване}
+%\label{fig0043}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0044.png}
+%  \caption{Субоптимални стойности за функцията Rastrigin с пълно изчерпване}
+%\label{fig0044}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0045.png}
+%  \caption{Брой изчисления на функцията Rastrigin с пълно изчерпване}
+%\label{fig0045}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0046.png}
+%  \caption{Изчислително време [ms] за функцията Griewank с пълно изчерпване}
+%\label{fig0046}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0047.png}
+%  \caption{Субоптимални стойности за функцията Griewank с пълно изчерпване}
+%\label{fig0047}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0048.png}
+%  \caption{Брой изчисления на функцията Griewank с пълно изчерпване}
+%\label{fig0048}
+%\end{figure}
+%
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0019.png}
-  \caption{Изчислително време [ms] за функцията Michalewicz с локално търсене}
-\label{fig0019}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0019.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0019}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0020.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0020}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0021.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0021}
+  \end{subfigure}
+  \caption{Функцията Michalewicz с локално търсене}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0020.png}
-  \caption{Субоптимални стойности за функцията Michalewicz с локално търсене}
-\label{fig0020}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0022.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0022}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0023.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0023}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0024.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0024}
+  \end{subfigure}
+  \caption{Функцията Ackley с локално търсене}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0021.png}
-  \caption{Брой изчисления на функцията Michalewicz с локално търсене}
-\label{fig0021}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0028.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0028}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0029.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0029}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0030.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0030}
+  \end{subfigure}
+  \caption{Функцията Rastrigin с локално търсене}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0022.png}
-  \caption{Изчислително време [ms] за функцията Ackley с локално търсене}
-\label{fig0022}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0031.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0031}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0032.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0032}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0033.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0033}
+  \end{subfigure}
+  \caption{Функцията Griewank с локално търсене}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0023.png}
-  \caption{Субоптимални стойности за функцията Ackley с локално търсене}
-\label{fig0023}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0034.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0034}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0035.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0035}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0036.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0036}
+  \end{subfigure}
+  \caption{Функцията Michalewicz с пълно изчерпване}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0024.png}
-  \caption{Брой изчисления на функцията Ackley с локално търсене}
-\label{fig0024}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0037.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0037}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0038.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0038}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0039.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0039}
+  \end{subfigure}
+  \caption{Функцията Ackley с пълно изчерпване}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0025.png}
-  \caption{Изчислително време [ms] за функцията Schwefel с локално търсене}
-\label{fig0025}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0040.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0040}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0041.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0041}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0042.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0042}
+  \end{subfigure}
+  \caption{Функцията Schwefel с пълно изчерпване}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0026.png}
-  \caption{Субоптимални стойности за функцията Schwefel с локално търсене}
-\label{fig0026}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0043.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0043}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0044.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0044}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0045.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0045}
+  \end{subfigure}
+  \caption{Функцията Rastrigin с пълно изчерпване}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0027.png}
-  \caption{Брой изчисления на функцията Schwefel с локално търсене}
-\label{fig0027}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0028.png}
-  \caption{Изчислително време [ms] за функцията Rastrigin с локално търсене}
-\label{fig0028}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0029.png}
-  \caption{Субоптимални стойности за функцията Rastrigin с локално търсене}
-\label{fig0029}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0030.png}
-  \caption{Брой изчисления на функцията Rastrigin с локално търсене}
-\label{fig0030}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0031.png}
-  \caption{Изчислително време [ms] за функцията Griewank с локално търсене}
-\label{fig0031}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0032.png}
-  \caption{Субоптимални стойности за функцията Griewank с локално търсене}
-\label{fig0032}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0033.png}
-  \caption{Брой изчисления на функцията Griewank с локално търсене}
-\label{fig0033}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0034.png}
-  \caption{Изчислително време [ms] за функцията Michalewicz с пълно изчерпване}
-\label{fig0034}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0035.png}
-  \caption{Субоптимални стойности за функцията Michalewicz с пълно изчерпване}
-\label{fig0035}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0036.png}
-  \caption{Брой изчисления на функцията Michalewicz с пълно изчерпване}
-\label{fig0036}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0037.png}
-  \caption{Изчислително време [ms] за функцията Ackley с пълно изчерпване}
-\label{fig0037}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0038.png}
-  \caption{Субоптимални стойности за функцията Ackley с пълно изчерпване}
-\label{fig0038}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0039.png}
-  \caption{Брой изчисления на функцията Ackley с пълно изчерпване}
-\label{fig0039}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0040.png}
-  \caption{Изчислително време [ms] за функцията Schwefel с пълно изчерпване}
-\label{fig0040}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0041.png}
-  \caption{Субоптимални стойности за функцията Schwefel с пълно изчерпване}
-\label{fig0041}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0042.png}
-  \caption{Брой изчисления на функцията Schwefel с пълно изчерпване}
-\label{fig0042}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0043.png}
-  \caption{Изчислително време [ms] за функцията Rastrigin с пълно изчерпване}
-\label{fig0043}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0044.png}
-  \caption{Субоптимални стойности за функцията Rastrigin с пълно изчерпване}
-\label{fig0044}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0045.png}
-  \caption{Брой изчисления на функцията Rastrigin с пълно изчерпване}
-\label{fig0045}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0046.png}
-  \caption{Изчислително време [ms] за функцията Griewank с пълно изчерпване}
-\label{fig0046}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0047.png}
-  \caption{Субоптимални стойности за функцията Griewank с пълно изчерпване}
-\label{fig0047}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0048.png}
-  \caption{Брой изчисления на функцията Griewank с пълно изчерпване}
-\label{fig0048}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0046.png}
+  \subcaption{\tiny Изчислително време [ms]}
+  \label{fig0046}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0047.png}
+  \subcaption{\tiny Субоптимални стойности}
+  \label{fig0047}
+  \end{subfigure}
+  \begin{subfigure}{0.31\textwidth}
+  \includegraphics[width=\linewidth]{fig0048.png}
+  \subcaption{\tiny Брой смятания на функцията}
+  \label{fig0048}
+  \end{subfigure}
+  \caption{Функцията Griewank с пълно изчерпване}
 \end{figure}
 
 От извършените експерименти ясно се вижда, че добавката на локално търсене води до по-добри резултати, но това е за сметка на по-дългото време за пресмятане.
