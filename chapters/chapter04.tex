@@ -1,4 +1,4 @@
-﻿\chapter{Сравнителен анализ – експерименти и резултати}
+\chapter{Числени пресмятания}
 
 Прогнозирането в мобилното приложение от страната на клиента се извършва с трислоен перцептрон. Времевия ред се разбива на двойки минало-бъдеще, които съставляват обучаващите примери. Разделението на минал и бъдещ период е условно. Практически, цялата информация е от данни в миналото. С пълзящ прозорец, условното разделяне се получава за минали стойности и стойности в бъдещия момент, спрямо условния разделител. Разполагайки с тренировъчни примери, процесът по обучението на трислойния перцептрон е свързан с търсене на тегла, водещи до минимизирането на общата грешка, която мрежата допуска. В системата са реализирани два начина за търсене на оптимални тегла – точни градиентни и евристични. Двата начина се активират на случаен принцип с равна вероятност (Листинг \ref{list0020}).
 
@@ -73,74 +73,144 @@ System.out.println("Experiment end.");
 \label{fig0072}
 \end{figure}
 
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0073.png}
+%  \caption{Backpropagation брой тренировъчни цикли}
+%\label{fig0073}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0074.png}
+%  \caption{Backpropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0074}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0075.png}
+%  \caption{ResilientPropagation брой тренировъчни цикли}
+%\label{fig0075}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0076.png}
+%  \caption{ResilientPropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0076}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0077.png}
+%  \caption{QuickPropagation брой тренировъчни цикли}
+%\label{fig0077}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0078.png}
+%  \caption{QuickPropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0078}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0079.png}
+%  \caption{ScaledConjugateGradient брой тренировъчни цикли}
+%\label{fig0079}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0080.png}
+%  \caption{ScaledConjugateGradient обща грешка на изкуствената невронна мрежа}
+%\label{fig0080}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0081.png}
+%  \caption{ManhattanPropagation брой тренировъчни цикли}
+%\label{fig0081}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0082.png}
+%  \caption{ManhattanPropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0082}
+%\end{figure}
+%
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0073.png}
-  \caption{Backpropagation брой тренировъчни цикли}
-\label{fig0073}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0073.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0073}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0074.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0074}
+  \end{subfigure}
+  \caption{Backpropagation}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0074.png}
-  \caption{Backpropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0074}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0075.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0075}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0076.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0076}
+  \end{subfigure}
+  \caption{ResilientPropagation}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0075.png}
-  \caption{ResilientPropagation брой тренировъчни цикли}
-\label{fig0075}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0077.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0077}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0078.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0078}
+  \end{subfigure}
+  \caption{QuickPropagation}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0076.png}
-  \caption{ResilientPropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0076}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0079.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0079}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0080.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0080}
+  \end{subfigure}
+  \caption{ScaledConjugateGradient}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0077.png}
-  \caption{QuickPropagation брой тренировъчни цикли}
-\label{fig0077}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0078.png}
-  \caption{QuickPropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0078}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0079.png}
-  \caption{ScaledConjugateGradient брой тренировъчни цикли}
-\label{fig0079}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0080.png}
-  \caption{ScaledConjugateGradient обща грешка на изкуствената невронна мрежа}
-\label{fig0080}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0081.png}
-  \caption{ManhattanPropagation брой тренировъчни цикли}
-\label{fig0081}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0082.png}
-  \caption{ManhattanPropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0082}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0081.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0081}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0082.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0082}
+  \end{subfigure}
+  \caption{ManhattanPropagation}
 \end{figure}
 
 \subsection{Цена на биткойн}
@@ -152,74 +222,144 @@ System.out.println("Experiment end.");
 \label{fig0083}
 \end{figure}
 
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0084.png}
+%  \caption{Backpropagation брой тренировъчни цикли}
+%\label{fig0084}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0085.png}
+%  \caption{Backpropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0085}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0086.png}
+%  \caption{ResilientPropagation брой тренировъчни цикли}
+%\label{fig0086}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0087.png}
+%  \caption{ResilientPropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0087}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0088.png}
+%  \caption{QuickPropagation брой тренировъчни цикли}
+%\label{fig0088}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0089.png}
+%  \caption{QuickPropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0089}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0090.png}
+%  \caption{ScaledConjugateGradient брой тренировъчни цикли}
+%\label{fig0090}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0091.png}
+%  \caption{ScaledConjugateGradient обща грешка на изкуствената невронна мрежа}
+%\label{fig0091}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0092.png}
+%  \caption{ManhattanPropagation брой тренировъчни цикли}
+%\label{fig0092}
+%\end{figure}
+%
+%\begin{figure}[H]
+%  \centering
+%  \includegraphics[width=0.8\linewidth]{fig0093.png}
+%  \caption{ManhattanPropagation обща грешка на изкуствената невронна мрежа}
+%\label{fig0093}
+%\end{figure}
+%
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0084.png}
-  \caption{Backpropagation брой тренировъчни цикли}
-\label{fig0084}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0084.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0084}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0085.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0085}
+  \end{subfigure}
+  \caption{Backpropagation}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0085.png}
-  \caption{Backpropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0085}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0086.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0086}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0087.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0087}
+  \end{subfigure}
+  \caption{ResilientPropagation}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0086.png}
-  \caption{ResilientPropagation брой тренировъчни цикли}
-\label{fig0086}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0088.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0088}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0089.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0089}
+  \end{subfigure}
+  \caption{QuickPropagation}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0087.png}
-  \caption{ResilientPropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0087}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0090.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0090}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0091.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0091}
+  \end{subfigure}
+  \caption{ScaledConjugateGradient}
 \end{figure}
 
 \begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0088.png}
-  \caption{QuickPropagation брой тренировъчни цикли}
-\label{fig0088}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0089.png}
-  \caption{QuickPropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0089}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0090.png}
-  \caption{ScaledConjugateGradient брой тренировъчни цикли}
-\label{fig0090}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0091.png}
-  \caption{ScaledConjugateGradient обща грешка на изкуствената невронна мрежа}
-\label{fig0091}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0092.png}
-  \caption{ManhattanPropagation брой тренировъчни цикли}
-\label{fig0092}
-\end{figure}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.8\linewidth]{fig0093.png}
-  \caption{ManhattanPropagation обща грешка на изкуствената невронна мрежа}
-\label{fig0093}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0092.png}
+  \subcaption{\tiny Брой тренировъчни цикли}
+  \label{fig0092}
+  \end{subfigure}
+  \begin{subfigure}{0.49\textwidth}
+  \includegraphics[width=\linewidth]{fig0093.png}
+  \subcaption{\tiny Обща грешка допусната от ИНМ}
+  \label{fig0093}
+  \end{subfigure}
+  \caption{ManhattanPropagation}
 \end{figure}
 
 \subsection{Анализ на ефективността}
