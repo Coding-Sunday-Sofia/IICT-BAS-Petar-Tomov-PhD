@@ -50,6 +50,12 @@
 % Използва се за многоредови коментари.
 \usepackage{verbatim}
 
+% Използвасе за междуредово разстояние.
+\usepackage{lipsum}
+
+% Използва се за таблици, които да са на повече от една страница.
+\usepackage{longtable}
+
 % Заглавие.
 \title{Прогнозиране на времеви редове с изкуствени невронни мрежи}
 \makeatletter
@@ -71,7 +77,7 @@
 \fancyhead[LE,RO]{\thepage}
 \fancyhead[RE]{\tiny\MakeUppercase{\inserttitle}}
 \fancyhead[LO]{\tiny\leftmark}
-\fancyfoot[LE,RO]{Петър Томов - ИИКТ-БАН - София - 2021}
+\fancyfoot[LE,RO]{Петър Томов - ИИКТ-БАН - София - 2022}
 
 % Дебелина на разделителните линии.
 \renewcommand{\headrulewidth}{2pt}
@@ -89,6 +95,9 @@
 
 % Определя характеристиките на листигните за програмния код.
 \lstset{backgroundcolor=\color{gray!30}, breaklines=true, language=r, frame=single}
+
+% Разстояние от ред и половина.
+\linespread{1.5}
 
 % Начало на документа.
 \begin{document}
@@ -109,7 +118,7 @@
 \addcontentsline{toc}{chapter}{Списък на съкращенията}
 \chapter*{Списък на съкращенията}
 
-\begin{tabular}{ | p{3.75cm} | c | p{3.75cm} | c | }
+\begin{longtable}{ | p{3.75cm} | c | p{3.75cm} | c | }
 \hline
 \cellcolor{gray!15}Чуждоезичен термин & \cellcolor{gray!15}Съкращение & \cellcolor{gray!15}Български термин & \cellcolor{gray!15}Съкращение \\ [0.05ex] 
 \hline
@@ -152,7 +161,7 @@ Time Series & TS & Времеви редове & ВР \\
 \hline
 Volunteer Distributed Computing & VDC & Доброволчески разпределени изчисления & ДРИ \\  
 \hline
-\end{tabular}
+\end{longtable}
 
 % Списък с фигурите.
 \addcontentsline{toc}{chapter}{Списък на фигурите}
