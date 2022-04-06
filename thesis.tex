@@ -1,4 +1,5 @@
-\documentclass[14pt,a4paper,openany]{book}
+\documentclass[12pt,a4paper,openany]{book}
+\usepackage{layout}
 %\degree{"Доктор"} 
 %\thesistitle{ПРОГНОЗИРАНЕ НА ВРЕМЕВИ РЕДОВЕ С ИЗКУСТВЕНИ НЕВРОННИ МРЕЖИ}
 %\author{\href{https://www.iict.bas.bg/ipdss/p-tomov-bg.html}{инж. Петър Росенов \textsc{Томов}}}
@@ -14,6 +15,15 @@
 
 % Команда с множество опции за настройка на поведението на пакета hyperref, с най-полезната опция - кирилизация на заглавията от Bookmarks в Acrobat.
 \hypersetup{unicode=true, colorlinks=true, linkcolor=black, citecolor=black, urlcolor=black}
+
+%Set margins
+\usepackage[left=2.5cm,right=2.5cm,top=3.5cm,bottom=3.5cm]{geometry}
+
+%tab first paragraph
+\usepackage{indentfirst}
+
+\usepackage{makecell}
+\usepackage{tabularx,colortbl}
 
 % Използване на български език.
 \usepackage[T2A,T1]{fontenc}
@@ -52,6 +62,7 @@
 
 % Използвасе за междуредово разстояние.
 \usepackage{lipsum}
+\usepackage{setspace}
 
 % Използва се за таблици, които да са на повече от една страница.
 \usepackage{longtable}
@@ -101,6 +112,9 @@
 
 % Начало на документа.
 \begin{document}
+
+%Принт отстъпите на страницата
+%\layout 
 
 % Предна корица.
 \includepdf[pages={1}]{covers/front}
@@ -200,7 +214,10 @@ Volunteer Distributed Computing & VDC & Доброволчески разпре�
 \printindex
 
 % Приложения.
+\tiny
+\begin{spacing}{0.8}
 \include{chapters/appendix01}
+\end{spacing}
 
 % Задна корица.
 %\includepdf[pages=-]{covers/back}
